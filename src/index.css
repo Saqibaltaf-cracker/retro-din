@@ -1,0 +1,841 @@
+@import "tailwindcss";
+
+@theme {
+  --font-digital: "Share Tech Mono", monospace;
+  --font-lcd: "VT323", monospace;
+  --font-label: "Roboto Condensed", sans-serif;
+}
+
+:root {
+  --color-lcd-primary: #ff85d5;
+  --color-lcd-primary-rgb: 255, 133, 213;
+  --color-lcd-primary-off: #341228;
+  --color-lcd-secondary: #ffbfe9;
+  --color-lcd-secondary-rgb: 255, 191, 233;
+  --color-lcd-secondary-off: #381a2e;
+  --color-lcd-danger: #ff4071;
+  --color-lcd-danger-off: #380816;
+}
+
+:root[data-theme="green"] {
+  --color-lcd-primary: #4af04a;
+  --color-lcd-primary-rgb: 74, 240, 74;
+  --color-lcd-primary-off: #122a12;
+  --color-lcd-secondary: #ff9900;
+  --color-lcd-secondary-rgb: 255, 153, 0;
+  --color-lcd-secondary-off: #331a00;
+  --color-lcd-danger: #ff3333;
+  --color-lcd-danger-off: #3a1010;
+}
+
+:root[data-theme="blue"] {
+  --color-lcd-primary: #4a90e2;
+  --color-lcd-primary-rgb: 74, 144, 226;
+  --color-lcd-primary-off: #121a2a;
+  --color-lcd-secondary: #c94af0;
+  --color-lcd-secondary-rgb: 201, 74, 240;
+  --color-lcd-secondary-off: #2a1233;
+  --color-lcd-danger: #ff3388;
+  --color-lcd-danger-off: #3a1020;
+}
+
+:root[data-theme="white"] {
+  --color-lcd-primary: #ffffff;
+  --color-lcd-primary-rgb: 255, 255, 255;
+  --color-lcd-primary-off: #222222;
+  --color-lcd-secondary: #cccccc;
+  --color-lcd-secondary-rgb: 204, 204, 204;
+  --color-lcd-secondary-off: #1a1a1a;
+  --color-lcd-danger: #ff5555;
+  --color-lcd-danger-off: #331111;
+}
+
+:root[data-theme="amber"] {
+  --color-lcd-primary: #ffaa00;
+  --color-lcd-primary-rgb: 255, 170, 0;
+  --color-lcd-primary-off: #332200;
+  --color-lcd-secondary: #ff5500;
+  --color-lcd-secondary-rgb: 255, 85, 0;
+  --color-lcd-secondary-off: #331100;
+  --color-lcd-danger: #ff0000;
+  --color-lcd-danger-off: #330000;
+}
+
+:root[data-theme="pink"] {
+  --color-lcd-primary: #ff85d5;
+  --color-lcd-primary-rgb: 255, 133, 213;
+  --color-lcd-primary-off: #341228;
+  --color-lcd-secondary: #ffbfe9;
+  --color-lcd-secondary-rgb: 255, 191, 233;
+  --color-lcd-secondary-off: #381a2e;
+  --color-lcd-danger: #ff4071;
+  --color-lcd-danger-off: #380816;
+}
+
+:root[data-theme="orange"] {
+  --color-lcd-primary: #ff6600;
+  --color-lcd-primary-rgb: 255, 102, 0;
+  --color-lcd-primary-off: #381600;
+  --color-lcd-secondary: #ffbb00;
+  --color-lcd-secondary-rgb: 255, 187, 0;
+  --color-lcd-secondary-off: #382900;
+  --color-lcd-danger: #ff1100;
+  --color-lcd-danger-off: #380400;
+}
+
+:root[data-theme="red"] {
+  --color-lcd-primary: #ff1a1a;
+  --color-lcd-primary-rgb: 255, 26, 26;
+  --color-lcd-primary-off: #380606;
+  --color-lcd-secondary: #ff8833;
+  --color-lcd-secondary-rgb: 255, 136, 51;
+  --color-lcd-secondary-off: #381e0b;
+  --color-lcd-danger: #ffffff;
+  --color-lcd-danger-off: #333333;
+}
+
+:root[data-theme="full-blue"] {
+  --color-lcd-primary: #0066ff;
+  --color-lcd-primary-rgb: 0, 102, 255;
+  --color-lcd-primary-off: #001738;
+  --color-lcd-secondary: #00f0ff;
+  --color-lcd-secondary-rgb: 0, 240, 255;
+  --color-lcd-secondary-off: #003038;
+  --color-lcd-danger: #ff3366;
+  --color-lcd-danger-off: #380b16;
+}
+
+:root[data-theme="purple"] {
+  --color-lcd-primary: #b336ff;
+  --color-lcd-primary-rgb: 179, 54, 255;
+  --color-lcd-primary-off: #250738;
+  --color-lcd-secondary: #ff47c2;
+  --color-lcd-secondary-rgb: 255, 71, 194;
+  --color-lcd-secondary-off: #380b29;
+  --color-lcd-danger: #00f0ff;
+  --color-lcd-danger-off: #003038;
+}
+
+:root[data-theme="cyan"] {
+  --color-lcd-primary: #00f0ff;
+  --color-lcd-primary-rgb: 0, 240, 255;
+  --color-lcd-primary-off: #002e33;
+  --color-lcd-secondary: #4a90e2;
+  --color-lcd-secondary-rgb: 74, 144, 226;
+  --color-lcd-secondary-off: #0e1e33;
+  --color-lcd-danger: #ff3377;
+  --color-lcd-danger-off: #330b18;
+}
+
+:root[data-theme="yellow"] {
+  --color-lcd-primary: #ffcc00;
+  --color-lcd-primary-rgb: 255, 204, 0;
+  --color-lcd-primary-off: #332900;
+  --color-lcd-secondary: #ff6600;
+  --color-lcd-secondary-rgb: 255, 102, 0;
+  --color-lcd-secondary-off: #331400;
+  --color-lcd-danger: #ff1100;
+  --color-lcd-danger-off: #330300;
+}
+
+:root[data-theme="ice-blue"] {
+  --color-lcd-primary: #70f3ff;
+  --color-lcd-primary-rgb: 112, 243, 255;
+  --color-lcd-primary-off: #0d282e;
+  --color-lcd-secondary: #5c7cfa;
+  --color-lcd-secondary-rgb: 92, 124, 250;
+  --color-lcd-secondary-off: #111833;
+  --color-lcd-danger: #f783ac;
+  --color-lcd-danger-off: #33121d;
+}
+
+:root[data-theme="gold"] {
+  --color-lcd-primary: #f5d061;
+  --color-lcd-primary-rgb: 245, 208, 97;
+  --color-lcd-primary-off: #33290e;
+  --color-lcd-secondary: #e67e22;
+  --color-lcd-secondary-rgb: 230, 126, 34;
+  --color-lcd-secondary-off: #331b08;
+  --color-lcd-danger: #e74c3c;
+  --color-lcd-danger-off: #330f0a;
+}
+
+:root[data-theme="sunset"] {
+  --color-lcd-primary: #ff5e62;
+  --color-lcd-primary-rgb: 255, 94, 98;
+  --color-lcd-primary-off: #331011;
+  --color-lcd-secondary: #ff9966;
+  --color-lcd-secondary-rgb: 255, 153, 102;
+  --color-lcd-secondary-off: #331c10;
+  --color-lcd-danger: #f857a6;
+  --color-lcd-danger-off: #330f20;
+}
+
+:root[data-theme="ruby"] {
+  --color-lcd-primary: #e60049;
+  --color-lcd-primary-rgb: 230, 0, 73;
+  --color-lcd-primary-off: #330010;
+  --color-lcd-secondary: #ff5a36;
+  --color-lcd-secondary-rgb: 255, 90, 54;
+  --color-lcd-secondary-off: #33120b;
+  --color-lcd-danger: #b5179e;
+  --color-lcd-danger-off: #280523;
+}
+
+:root[data-theme="mint"] {
+  --color-lcd-primary: #38ef7d;
+  --color-lcd-primary-rgb: 56, 239, 125;
+  --color-lcd-primary-off: #0a2e17;
+  --color-lcd-secondary: #11998e;
+  --color-lcd-secondary-rgb: 17, 153, 142;
+  --color-lcd-secondary-off: #072624;
+  --color-lcd-danger: #ff5252;
+  --color-lcd-danger-off: #330d0d;
+}
+
+:root[data-theme="laser-lime"] {
+  --color-lcd-primary: #b4ff39;
+  --color-lcd-primary-rgb: 180, 255, 57;
+  --color-lcd-primary-off: #22330a;
+  --color-lcd-secondary: #00f0ff;
+  --color-lcd-secondary-rgb: 0, 240, 255;
+  --color-lcd-secondary-off: #002e33;
+  --color-lcd-danger: #ff007f;
+  --color-lcd-danger-off: #330019;
+}
+
+:root[data-theme="rgb"] {
+  --color-lcd-primary: #ff0077;
+  --color-lcd-primary-rgb: 255, 0, 119;
+  --color-lcd-primary-off: #2e0818;
+  --color-lcd-secondary: #00f0ff;
+  --color-lcd-secondary-rgb: 0, 240, 255;
+  --color-lcd-secondary-off: #08242e;
+  --color-lcd-danger: #ffe600;
+  --color-lcd-danger-off: #332d00;
+}
+
+html {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  place-items: center;
+  justify-content: center;
+  background-color: #000000;
+  color: white;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+}
+
+body.is-isolated,
+body.is-isolated #root {
+  background-color: #000000 !important;
+  background-image: none !important;
+  width: 100vw !important;
+  min-width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* CD LED Continuous Beeping / Flashing Pulse when Streaming from YouTube */
+@keyframes cd-led-beep {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1.7) drop-shadow(0 0 6px var(--color-lcd-primary));
+    transform: scale(1.2);
+  }
+  50% {
+    opacity: 0.15;
+    filter: brightness(0.45);
+    transform: scale(0.85);
+  }
+}
+
+.animate-cd-beep {
+  animation: cd-led-beep 0.55s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Realistic Plastic Chassis */
+.stereo-chassis {
+  background: 
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, transparent 2%, transparent 98%, rgba(255,255,255,0.02) 100%),
+    linear-gradient(to right, rgba(255,255,255,0.02) 0%, transparent 2%, transparent 98%, rgba(255,255,255,0.02) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E"),
+    #0d0d0d;
+  box-shadow: 
+    inset 0 1px 1px rgba(255,255,255,0.1),
+    inset 0 -1px 2px rgba(0,0,0,0.8),
+    0 30px 60px rgba(0,0,0,0.9),
+    0 0 100px rgba(0,0,0,0.8);
+  border-radius: 8px;
+}
+
+.chassis-inner {
+  background: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E"),
+    #111;
+  box-shadow: inset 0 3px 8px rgba(0,0,0,0.9), inset 0 -1px 1px rgba(255,255,255,0.05);
+  border-radius: 4px;
+}
+
+/* Hard Plastic Buttons with Individual Gloss Finish */
+.btn-hard {
+  background: linear-gradient(180deg, #444444 0%, #2c2c2c 40%, #1a1a1a 45%, #141414 90%, #0a0a0a 100%);
+  border: 1px solid #000;
+  border-top-color: #6a6a6a;
+  border-left-color: #444444;
+  border-right-color: #1c1c1c;
+  border-bottom-color: #050505;
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.8),
+    inset 0 1px 1px rgba(255,255,255,0.32),
+    inset 0 -1px 1px rgba(0,0,0,0.7);
+  color: #e0e0e0;
+  font-family: var(--font-label);
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.05s, box-shadow 0.05s, background 0.05s;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Individual glossy light reflection on button top-half */
+.btn-hard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 46%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.03) 95%, transparent 100%);
+  pointer-events: none;
+  border-radius: 1px 1px 0 0;
+}
+
+.btn-hard:hover::before {
+  background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.08) 95%, transparent 100%);
+}
+
+.btn-hard:active, .btn-hard.active {
+  transform: translateY(1px);
+  background: linear-gradient(180deg, #3c3c3c 0%, #2c2c2c 45%, #222222 100%);
+  border-top-color: #555555;
+  border-left-color: #383838;
+  box-shadow: 
+    0 1px 2px rgba(0,0,0,0.7),
+    inset 0 1px 1px rgba(255,255,255,0.25);
+}
+
+.btn-hard:active::before, .btn-hard.active::before {
+  opacity: 0.25;
+}
+
+.btn-hard:disabled {
+  opacity: 0.8;
+  cursor: default;
+}
+
+/* JDM Automotive Backlit Controls (Zero outer glow, zero inner glow; only text/symbol illuminated) */
+.btn-backlit {
+  background: linear-gradient(180deg, #323438 0%, #222326 40%, #151618 85%, #0d0d0e 100%);
+  border: 1px solid #080808;
+  border-top-color: #484a50;
+  border-left-color: #2c2e32;
+  border-right-color: #141517;
+  border-bottom-color: #080808;
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.85),
+    inset 0 1px 1px rgba(255,255,255,0.14),
+    inset 0 -1px 1px rgba(0,0,0,0.7);
+  color: #666;
+  font-family: var(--font-label);
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.05s;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.btn-backlit::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.01) 100%);
+  pointer-events: none;
+}
+
+/* Illuminated state: ONLY text & symbols inside light up. Button borders & chassis remain 100% metallic and dark. */
+.btn-backlit.lit {
+  color: var(--color-lcd-primary);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95), 0 0 1px rgba(var(--color-lcd-primary-rgb), 0.5);
+  border: 1px solid #080808;
+  border-top-color: #484a50;
+  border-left-color: #2c2e32;
+  border-right-color: #141517;
+  border-bottom-color: #080808;
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.85),
+    inset 0 1px 1px rgba(255,255,255,0.14),
+    inset 0 -1px 1px rgba(0,0,0,0.7);
+}
+
+/* Slow, organic light breathing for illuminated text only (zero border/chassis change) */
+@keyframes buttonSlowPulse {
+  0%, 100% {
+    text-shadow: 
+      0 1px 1px rgba(0,0,0,0.95),
+      0 0 1px rgba(var(--color-lcd-primary-rgb), 0.35);
+  }
+  50% {
+    text-shadow: 
+      0 1px 1px rgba(0,0,0,0.95),
+      0 0 2px rgba(var(--color-lcd-primary-rgb), 0.65);
+  }
+}
+
+.btn-backlit.lit:not(:active):not(.booting),
+.rocker-half.backlit-half.lit:not(:active):not(.booting) {
+  animation: buttonSlowPulse 4.5s ease-in-out infinite;
+}
+
+.btn-backlit.lit:hover {
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95), 0 0 2px rgba(var(--color-lcd-primary-rgb), 0.7);
+  box-shadow: 
+    0 2px 4px rgba(0,0,0,0.9),
+    inset 0 1px 1px rgba(255,255,255,0.18),
+    inset 0 -1px 1px rgba(0,0,0,0.7);
+}
+
+/* Backlit Level Adjustments (0: OFF, 1: LOW, 2: MED, 3: HIGH)
+   Only modulates the illumination brightness of text and symbols inside the buttons.
+   Physical button chassis, borders, and shadows remain completely dark, solid, and metallic. */
+html[data-backlit-level="0"] {
+  --backlight-multiplier: 0.15;
+}
+html[data-backlit-level="1"] {
+  --backlight-multiplier: 0.45;
+}
+html[data-backlit-level="2"] {
+  --backlight-multiplier: 0.75;
+}
+html[data-backlit-level="3"] {
+  --backlight-multiplier: 1.0;
+}
+
+/* Level 0: OFF / Dim text only */
+html[data-backlit-level="0"] .btn-backlit.lit:not(:active),
+html[data-backlit-level="0"] .rocker-half.backlit-half.lit:not(:active) {
+  color: #555a64 !important;
+  text-shadow: none !important;
+  animation: none !important;
+}
+html[data-backlit-level="0"] .btn-backlit.lit:not(:active) svg,
+html[data-backlit-level="0"] .rocker-half.backlit-half.lit:not(:active) svg {
+  color: #555a64 !important;
+  filter: none !important;
+}
+
+/* Level 1: LOW backlight text */
+html[data-backlit-level="1"] .btn-backlit.lit:not(:active),
+html[data-backlit-level="1"] .rocker-half.backlit-half.lit:not(:active) {
+  color: rgba(var(--color-lcd-primary-rgb), 0.48) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95) !important;
+}
+html[data-backlit-level="1"] .btn-backlit.lit:not(:active) svg,
+html[data-backlit-level="1"] .rocker-half.backlit-half.lit:not(:active) svg {
+  color: rgba(var(--color-lcd-primary-rgb), 0.48) !important;
+  filter: none !important;
+}
+
+/* Level 2: MEDIUM backlight text */
+html[data-backlit-level="2"] .btn-backlit.lit:not(:active),
+html[data-backlit-level="2"] .rocker-half.backlit-half.lit:not(:active) {
+  color: rgba(var(--color-lcd-primary-rgb), 0.78) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95) !important;
+}
+html[data-backlit-level="2"] .btn-backlit.lit:not(:active) svg,
+html[data-backlit-level="2"] .rocker-half.backlit-half.lit:not(:active) svg {
+  color: rgba(var(--color-lcd-primary-rgb), 0.78) !important;
+  filter: none !important;
+}
+
+/* Level 3: HIGH backlight text */
+html[data-backlit-level="3"] .btn-backlit.lit:not(:active),
+html[data-backlit-level="3"] .rocker-half.backlit-half.lit:not(:active) {
+  color: var(--color-lcd-primary) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95), 0 0 1.5px rgba(var(--color-lcd-primary-rgb), 0.6) !important;
+}
+html[data-backlit-level="3"] .btn-backlit.lit:not(:active) svg,
+html[data-backlit-level="3"] .rocker-half.backlit-half.lit:not(:active) svg {
+  color: var(--color-lcd-primary) !important;
+  filter: none !important;
+}
+
+/* Non-button deck indicators and labels (Rotary notch, LED badges, Frequency markings) */
+html[data-backlit-level="0"] .eq-band-label.lit,
+html[data-backlit-level="0"] .brand-logo-led,
+html[data-backlit-level="0"] .brand-model-badge,
+html[data-backlit-level="0"] .brand-subtext,
+html[data-backlit-level="0"] .rotary-led-active,
+html[data-backlit-level="0"] .rotary-notch {
+  color: #6b7280 !important;
+  text-shadow: none !important;
+  opacity: 0.22 !important;
+  filter: grayscale(0.8) brightness(0.4) !important;
+}
+
+html[data-backlit-level="1"] .eq-band-label.lit,
+html[data-backlit-level="1"] .brand-logo-led,
+html[data-backlit-level="1"] .brand-model-badge,
+html[data-backlit-level="1"] .brand-subtext,
+html[data-backlit-level="1"] .rotary-led-active,
+html[data-backlit-level="1"] .rotary-notch {
+  color: rgba(var(--color-lcd-primary-rgb), 0.50) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95) !important;
+  opacity: 0.50 !important;
+  filter: brightness(0.65) !important;
+}
+
+html[data-backlit-level="2"] .eq-band-label.lit,
+html[data-backlit-level="2"] .brand-logo-led,
+html[data-backlit-level="2"] .brand-model-badge,
+html[data-backlit-level="2"] .brand-subtext,
+html[data-backlit-level="2"] .rotary-led-active,
+html[data-backlit-level="2"] .rotary-notch {
+  color: rgba(var(--color-lcd-primary-rgb), 0.80) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95) !important;
+  opacity: 0.80 !important;
+  filter: brightness(0.85) !important;
+}
+
+html[data-backlit-level="3"] .eq-band-label.lit,
+html[data-backlit-level="3"] .brand-logo-led,
+html[data-backlit-level="3"] .brand-model-badge,
+html[data-backlit-level="3"] .brand-subtext,
+html[data-backlit-level="3"] .rotary-led-active,
+html[data-backlit-level="3"] .rotary-notch {
+  color: var(--color-lcd-primary) !important;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95), 0 0 4px rgba(var(--color-lcd-primary-rgb), 0.5) !important;
+  opacity: 1.0 !important;
+  filter: none !important;
+}
+
+/* Backlit Intensity on Button Press (Tactile depression, zero outer/inner glow, crisp bright text) */
+.btn-backlit:active, 
+.btn-backlit.active {
+  transform: translateY(1px);
+  background: linear-gradient(180deg, #2b2d30 0%, #1e1f22 45%, #141517 100%) !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 2px #ffffff, 0 0 4px var(--color-lcd-primary) !important;
+  border: 1px solid #080808 !important;
+  border-top-color: #55575e !important;
+  border-left-color: #2e3035 !important;
+  border-right-color: #161719 !important;
+  border-bottom-color: #080808 !important;
+  box-shadow: 
+    0 1px 2px rgba(0,0,0,0.8),
+    inset 0 1px 1px rgba(255,255,255,0.2) !important;
+  filter: none !important;
+}
+
+.rocker-half.backlit-half:active {
+  transform: translateY(1px);
+  background: linear-gradient(180deg, #2b2d30 0%, #1e1f22 45%, #141517 100%) !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 2px #ffffff, 0 0 4px var(--color-lcd-primary) !important;
+  border: 1px solid #000 !important;
+  border-top-color: #555 !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.7) !important;
+  filter: none !important;
+}
+
+/* Ensure SVG icons inside pressed buttons light up brightly without affecting the button body */
+.btn-backlit:active svg,
+.btn-backlit.active svg,
+.rocker-half.backlit-half:active svg {
+  filter: drop-shadow(0 0 2px var(--color-lcd-primary));
+  color: #ffffff !important;
+}
+
+/* Startup Left-to-Right Backlight Wave Pulse - Only illuminates the text & symbol inside */
+@keyframes buttonBootSweep {
+  0% {
+    color: #444;
+    text-shadow: none;
+  }
+  28% {
+    color: #ffffff;
+    text-shadow: 0 0 2px #ffffff;
+  }
+  65% {
+    color: var(--color-lcd-primary);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.95);
+  }
+  100% {
+    color: var(--color-lcd-primary);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.95);
+  }
+}
+
+.btn-backlit.booting {
+  animation: buttonBootSweep 1.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  animation-delay: var(--boot-delay, 0s);
+}
+
+.rocker-half.backlit-half.booting {
+  animation: buttonBootSweep 1.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  animation-delay: var(--boot-delay, 0s);
+}
+
+.booting-dial {
+  animation: dialBootGlow 1.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  animation-delay: var(--boot-delay, 0s);
+}
+
+@keyframes dialBootGlow {
+  0% {
+    box-shadow: inset 0 2px 5px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.9);
+  }
+  30% {
+    box-shadow: inset 0 2px 5px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.9);
+  }
+  100% {
+    box-shadow: inset 0 2px 5px rgba(0,0,0,1), 0 2px 6px rgba(0,0,0,0.9);
+  }
+}
+
+/* Backlit EQ Rocker Switch Styling - No outer or inner border glow, only ▲ and ▼ light up */
+.rocker-container.backlit-rocker {
+  border: 1px solid #000 !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+
+.rocker-container.backlit-rocker.lit {
+  border: 1px solid #000 !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+
+.rocker-half.backlit-half {
+  border: 1px solid #000 !important;
+  border-top-color: #444 !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.18), 0 1px 2px rgba(0,0,0,0.6) !important;
+  color: #666;
+}
+
+.rocker-half.backlit-half.lit {
+  color: var(--color-lcd-primary);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95);
+  border: 1px solid #000 !important;
+  border-top-color: #444 !important;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.18), 0 1px 2px rgba(0,0,0,0.6) !important;
+}
+
+.rocker-half.backlit-half.lit:hover {
+  text-shadow: 0 1px 1px rgba(0,0,0,0.95);
+  background: linear-gradient(180deg, #444444 0%, #303030 35%, #202020 85%, #121212 100%) !important;
+}
+
+/* Rocker Button specific with individual convex gloss */
+.rocker-container {
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  padding: 1px;
+  border-radius: 3px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.9), 0 1px 0 rgba(255,255,255,0.05);
+  border: 1px solid #111;
+}
+
+.rocker-half {
+  background: linear-gradient(180deg, #3a3a3a 0%, #282828 35%, #181818 85%, #0e0e0e 100%);
+  border: 1px solid #000;
+  border-top-color: #555;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.22), 0 1px 2px rgba(0,0,0,0.6);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  color: #ccc;
+  transition: all 0.05s;
+  position: relative;
+  overflow: hidden;
+}
+
+.rocker-half::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.rocker-half:hover::before {
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+}
+
+.rocker-half:active {
+  background: linear-gradient(180deg, #383838 0%, #282828 45%, #202020 100%);
+  border-top-color: #555;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
+}
+
+/* The LCD Glass panel */
+.lcd-glass {
+  background: #050605;
+  box-shadow: 
+    inset 0 4px 18px rgba(0,0,0,1),
+    inset 0 0 3px rgba(255,255,255,0.08),
+    0 1px 0 rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+  border-radius: 3px;
+}
+
+.lcd-glass::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -20%; right: 0; bottom: 0;
+  background: linear-gradient(105deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 30%, transparent 35%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.lcd-glass::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.2) 1px, rgba(0,0,0,0.2) 2px),
+    repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(0,0,0,0.1) 1px, rgba(0,0,0,0.1) 2px);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* LCD Text */
+.lcd-text {
+  font-family: var(--font-lcd);
+  color: var(--color-lcd-primary);
+  text-shadow: 0 0 6px var(--color-lcd-primary);
+  position: relative;
+  z-index: 2;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.lcd-text.off {
+  color: var(--color-lcd-primary-off);
+  text-shadow: none;
+}
+
+.lcd-text.amber {
+  color: var(--color-lcd-secondary);
+  text-shadow: 0 0 6px var(--color-lcd-secondary);
+}
+
+.lcd-text.amber.off {
+  color: var(--color-lcd-secondary-off);
+  text-shadow: none;
+}
+
+.lcd-text-digital {
+  font-family: var(--font-digital);
+}
+
+/* Indicators */
+.led-red {
+  width: 6px; height: 3px;
+  background: var(--color-lcd-danger-off);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
+  border-radius: 1px;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.led-red.on {
+  background: var(--color-lcd-danger);
+  box-shadow: 0 0 5px var(--color-lcd-danger), inset 0 0 1px rgba(255,255,255,0.8);
+}
+
+.led-hazy {
+  background: #ff5555;
+  box-shadow: 0 0 8px 2px rgba(255,50,50,0.8), inset 0 0 2px rgba(255,255,255,0.8);
+  filter: blur(0.5px);
+}
+
+/* Tape Deck Slot - Pure Black, No Gradients */
+.tape-slot {
+  background: #000000 !important;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tape-slot::before,
+.tape-slot::after {
+  display: none !important;
+}
+
+/* Sleek Rainbow Gradient for OLED Branding - Thin and Crisp (No Glow) */
+.rainbow-gradient-text {
+  background: linear-gradient(90deg, #ff2d55 0%, #ff9500 22%, #ffcc00 42%, #34c759 62%, #007aff 82%, #af52de 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  font-weight: 300 !important;
+  display: inline-block;
+  filter: none !important;
+  text-shadow: none !important;
+  letter-spacing: 0.08em;
+}
+
+/* Continuous Retro Marquee Scroll for VFD Alphanumeric Readout */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-scroll {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee-scroll 12s linear infinite;
+  will-change: transform;
+}
