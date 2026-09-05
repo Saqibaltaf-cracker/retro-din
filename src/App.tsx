@@ -6,7 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import { StereoDeck } from './components/StereoDeck';
 import { LeatherBackground } from './components/LeatherBackground';
-import { ExternalLink, Info, Video, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react';
+import { AdSenseGateModal } from './components/AdSenseGateModal';
+import { ExternalLink, Info, Video, ShieldCheck, ChevronDown, ChevronUp, Maximize2, Minimize2 } from 'lucide-react';
 
 export default function App() {
   const [isolated, setIsolated] = useState(false);
@@ -68,28 +69,28 @@ export default function App() {
   return (
     <div className={`w-screen min-w-[100vw] max-w-[100vw] ${isolated ? 'h-screen min-h-[100vh] max-h-[100vh] overflow-hidden bg-black' : 'min-h-screen overflow-x-hidden bg-[#0a0a0c]'} flex flex-col items-center ${isolated ? 'justify-center p-0 m-0' : 'justify-between'} relative font-sans select-none`}>
       {/* Isolation Mode Toggle & Scale Controls */}
-      <div className={`fixed top-3 right-3 z-50 flex items-center gap-2 ${isolated ? 'opacity-30 hover:opacity-100 transition-opacity duration-200' : ''}`}>
-        {/* Zoom Controls when Isolated */}
+      <div className={`fixed top-3 right-3 z-50 flex items-center gap-2.5 ${isolated ? 'opacity-90 hover:opacity-100 transition-opacity duration-200' : ''}`}>
+        {/* Zoom Controls when in Player Only mode */}
         {isolated && (
-          <div className="flex items-center gap-1 bg-[#0d0f14]/90 backdrop-blur-md px-2 py-1 rounded-[3px] border border-[#232732] shadow-lg">
-            <span className="text-[7.5px] font-mono font-bold text-zinc-400 tracking-wider">SIZE:</span>
+          <div className="flex items-center gap-1.5 bg-[#0d0f14]/95 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-[#2d3240] shadow-xl">
+            <span className="text-[9px] font-mono font-bold text-zinc-400 tracking-wider">SIZE:</span>
             <button
               onClick={() => setZoomMultiplier(m => Math.max(0.7, +(m - 0.1).toFixed(2)))}
-              className="w-4 h-4 rounded bg-[#161820] hover:bg-[#202430] active:scale-95 text-[9px] font-mono text-zinc-200 flex items-center justify-center border border-[#2b303c] transition-colors cursor-pointer"
+              className="w-6 h-6 rounded bg-[#161822] hover:bg-[#222636] active:scale-95 text-xs font-mono font-bold text-zinc-200 flex items-center justify-center border border-[#32384a] transition-colors cursor-pointer"
               title="Decrease Player Size"
             >
               -
             </button>
             <button
               onClick={() => setZoomMultiplier(1.0)}
-              className="px-1.5 h-4 rounded bg-[#161820] hover:bg-[#202430] text-[7.5px] font-mono font-bold text-[var(--color-lcd-primary)] flex items-center justify-center border border-[#2b303c] transition-colors cursor-pointer"
-              title="Reset to Default Large Size"
+              className="px-2 h-6 rounded bg-[#161822] hover:bg-[#222636] text-[10px] font-mono font-bold text-[var(--color-lcd-primary)] flex items-center justify-center border border-[#32384a] transition-colors cursor-pointer"
+              title="Reset to Default Size"
             >
               {Math.round(currentScale * 100)}%
             </button>
             <button
               onClick={() => setZoomMultiplier(m => Math.min(1.6, +(m + 0.1).toFixed(2)))}
-              className="w-4 h-4 rounded bg-[#161820] hover:bg-[#202430] active:scale-95 text-[9px] font-mono text-zinc-200 flex items-center justify-center border border-[#2b303c] transition-colors cursor-pointer"
+              className="w-6 h-6 rounded bg-[#161822] hover:bg-[#222636] active:scale-95 text-xs font-mono font-bold text-zinc-200 flex items-center justify-center border border-[#32384a] transition-colors cursor-pointer"
               title="Increase Player Size"
             >
               +
@@ -102,23 +103,30 @@ export default function App() {
             setIsolated(!isolated);
             setZoomMultiplier(1.0);
           }}
-          className="px-2.5 py-1 rounded-[3px] text-[8px] font-mono font-bold tracking-wider uppercase border transition-all duration-300 backdrop-blur-md cursor-pointer flex items-center gap-1.5 shadow-lg"
+          className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-mono font-black tracking-wider uppercase border-2 transition-all duration-300 backdrop-blur-md cursor-pointer flex items-center gap-2 shadow-2xl active:scale-95"
           style={{
-            background: isolated ? '#090a0f' : 'rgba(15, 16, 20, 0.85)',
-            borderColor: isolated ? 'var(--color-lcd-primary)' : '#2a2d35',
-            color: isolated ? 'var(--color-lcd-primary)' : '#8a909d',
-            boxShadow: isolated ? '0 0 10px rgba(var(--color-lcd-primary-rgb), 0.3)' : '0 2px 5px rgba(0,0,0,0.8)'
+            background: isolated ? 'rgba(10, 11, 16, 0.95)' : 'rgba(12, 14, 20, 0.95)',
+            borderColor: isolated ? 'var(--color-lcd-primary)' : 'rgba(var(--color-lcd-primary-rgb), 0.75)',
+            color: 'var(--color-lcd-primary)',
+            boxShadow: isolated 
+              ? '0 0 20px rgba(var(--color-lcd-primary-rgb), 0.4)' 
+              : '0 0 16px rgba(var(--color-lcd-primary-rgb), 0.25), 0 4px 12px rgba(0,0,0,0.8)'
           }}
-          title={isolated ? "Show Surrounding Dashboard & Details" : "Isolate Stereo Deck (Player Only)"}
+          title={isolated ? "Show Surrounding Dashboard & Details" : "Show Stereo Deck Only (Clean Focused View)"}
         >
+          {isolated ? (
+            <Minimize2 className="w-4 h-4 text-emerald-400" />
+          ) : (
+            <Maximize2 className="w-4 h-4 text-[var(--color-lcd-primary)]" />
+          )}
           <span 
-            className="w-1.5 h-1.5 rounded-full"
+            className="w-2 h-2 rounded-full"
             style={{
-              backgroundColor: isolated ? 'var(--color-lcd-primary)' : '#555',
-              boxShadow: isolated ? '0 0 5px var(--color-lcd-primary)' : 'none'
+              backgroundColor: isolated ? '#34d399' : 'var(--color-lcd-primary)',
+              boxShadow: isolated ? '0 0 8px #34d399' : '0 0 8px var(--color-lcd-primary)'
             }}
           />
-          <span>{isolated ? 'PLAYER ONLY (ACTIVE)' : 'ISOLATE PLAYER'}</span>
+          <span>{isolated ? 'SHOW FULL DASHBOARD' : 'SHOW PLAYER ONLY'}</span>
         </button>
       </div>
 
@@ -342,6 +350,9 @@ export default function App() {
           </div>
         </footer>
       )}
+
+      {/* 15-Second AdSense 24-Hour Access Gate */}
+      <AdSenseGateModal />
     </div>
   );
 }
