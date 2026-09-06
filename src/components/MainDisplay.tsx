@@ -3,7 +3,6 @@ import { SpectrumAnalyzer } from './SpectrumAnalyzer';
 import { StereoMode, VisualizerMode, JDM_STATIONS } from '../hooks/useStereo';
 import { AudioEngine, EqBand } from '../audio/AudioEngine';
 import { PerformanceSettings } from '../hooks/usePerformanceSettings';
-import { CarPlayIcon } from './CarPlayIcon';
 
 interface Props {
   powered: boolean;
@@ -44,8 +43,6 @@ interface Props {
     rawUrl: string;
   } | null;
   setActiveStreamEmbed?: (val: any) => void;
-  isolated?: boolean;
-  onToggleCarPlay?: () => void;
 }
 
 export const MainDisplay: React.FC<Props> = ({ 
@@ -54,9 +51,7 @@ export const MainDisplay: React.FC<Props> = ({
   theme, selectMemory, visualizerMode = 'FIRE_SPECTRUM', cycleVisualizerMode, toastMessage,
   speakerBalance = 'CENTER', toggleSpeakerBalance, activePresetName = 'HIP-HOP',
   showStreamDialog, setShowStreamDialog, setMode, openStreamDialog, perfSettings,
-  activeStreamEmbed, setActiveStreamEmbed,
-  isolated = false,
-  onToggleCarPlay
+  activeStreamEmbed, setActiveStreamEmbed
 }) => {
   const [internalShowYt, setInternalShowYt] = useState(false);
   const isStreamModalOpen = showStreamDialog !== undefined ? showStreamDialog : internalShowYt;
@@ -760,23 +755,11 @@ export const MainDisplay: React.FC<Props> = ({
           <button
             disabled={!powered}
             onClick={cycleVisualizerMode}
-            className={`btn-backlit px-1 h-5 w-[72px] min-w-[72px] max-w-[72px] flex-shrink-0 text-[6.5px] font-bold uppercase tracking-wider flex items-center justify-center ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit px-1.5 h-5 min-w-[76px] flex-shrink-0 text-[6.5px] font-bold uppercase tracking-wider flex items-center justify-center ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
             style={{ '--boot-delay': '0.5s' } as React.CSSProperties}
             title="Cycle Visualizer Mode"
           >
             VISUALISER
-          </button>
-
-          {/* CarPlay In-Car Fullscreen Button with Authentic Glyph and Same Backlight */}
-          <button
-            disabled={!powered}
-            onClick={onToggleCarPlay}
-            className={`btn-backlit px-1.5 h-5 flex-shrink-0 text-[6.5px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${isolated ? 'active font-black shadow-[0_0_6px_var(--color-lcd-primary)]' : ''}`}
-            style={{ '--boot-delay': '0.52s' } as React.CSSProperties}
-            title={isolated ? "Exit In-Car Fullscreen Mode" : "CarPlay In-Car Mode (Fullscreen Edge-to-Edge)"}
-          >
-            <CarPlayIcon className="w-2.5 h-2.5" />
-            <span>CARPLAY</span>
           </button>
         </div>
 

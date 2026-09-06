@@ -84,6 +84,21 @@ async function startServer() {
         return res.status(400).json({ error: "Invalid URL" });
       }
 
+      // Check if YouTube playlist
+      const listMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+      if (listMatch && listMatch[1]) {
+        try {
+          const oeRes = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/playlist?list=${listMatch[1]}&format=json`);
+          if (oeRes.ok) {
+            const data: any = await oeRes.json();
+            return res.json({ title: data.title, author: data.author_name, playlistId: listMatch[1], isPlaylist: true });
+          }
+        } catch (e) {
+          console.warn("oEmbed playlist fetch failed:", e);
+        }
+        return res.json({ title: `YT PLAYLIST: ${listMatch[1].slice(0, 12)}`, playlistId: listMatch[1], isPlaylist: true });
+      }
+
       // Check if YouTube link or video ID
       const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/|live\/))([\w-]{11})/);
       const videoId = ytMatch ? ytMatch[1] : (/^[\w-]{11}$/.test(url.trim()) ? url.trim() : null);

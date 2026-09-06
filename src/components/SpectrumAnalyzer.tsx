@@ -304,10 +304,9 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
               count++;
             }
             let avg = count > 0 ? (sum / count) : 0;
-            // Calibrated tilt and headroom to prevent slamming into the top ceiling at max volume
-            const headroomFactor = 0.82;
-            const tilt = Math.pow((i + 1) / numBands, 0.32) * 1.25;
-            const boosted = Math.min(235, Math.floor(avg * tilt * headroomFactor));
+            // Equal loudness / psychoacoustic curve: nominal signal rides 40%-65%, punching on loud transients
+            const tilt = 0.85 + Math.pow(i / numBands, 0.5) * 0.45;
+            const boosted = Math.min(255, Math.floor(avg * tilt * 0.82));
 
             dataArray[i] = boosted;
             totalEnergy += boosted;
@@ -330,14 +329,14 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
             let bandVal = 0;
 
             if (normPos < 0.25) {
-              const bassLine = 0.45 + 0.45 * Math.sin(now * 0.006 + i * 0.6);
-              bandVal = (kickImpact * 140) + (bassLine * 65);
+              const bassLine = 0.5 + 0.5 * Math.sin(now * 0.006 + i * 0.6);
+              bandVal = (kickImpact * 110) + (bassLine * 50);
             } else if (normPos < 0.65) {
-              const melody = 0.45 + 0.45 * Math.sin(now * 0.008 + i * 0.75) * Math.cos(now * 0.004 - i * 0.35);
-              bandVal = (snareImpact * 115) + (melody * 90);
+              const melody = 0.5 + 0.5 * Math.sin(now * 0.008 + i * 0.75) * Math.cos(now * 0.004 - i * 0.35);
+              bandVal = (snareImpact * 90) + (melody * 60);
             } else {
-              const sparkle = 0.35 + 0.45 * Math.sin(now * 0.018 + i * 1.2);
-              bandVal = (hihatPulse * 85) + (sparkle * 70);
+              const sparkle = 0.4 + 0.6 * Math.sin(now * 0.018 + i * 1.2);
+              bandVal = (hihatPulse * 70) + (sparkle * 50);
             }
 
             let eqFactor = 1;
@@ -352,7 +351,7 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
             }
 
             const jitter = (Math.sin(now * 0.045 + i * 9.2) * 8);
-            dataArray[i] = Math.min(230, Math.max(10, Math.floor((bandVal + jitter) * eqFactor * 0.82)));
+            dataArray[i] = Math.min(235, Math.max(8, Math.floor((bandVal + jitter) * eqFactor * 0.85)));
           }
 
           for (let w = 0; w < 128; w++) {
@@ -587,8 +586,7 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
         for (let i = 0; i < numBands; i++) {
           const cx = i * (bandWidth + 1.5) + bandWidth / 2 + 1;
           const val = dataArray[i];
-          // Calibrated headroom to prevent sticking to the top ceiling
-          const litSegments = powered ? Math.min(segmentsPerBand - 1, Math.floor((val / 255) * segmentsPerBand * 0.86)) : 0;
+          const litSegments = powered ? Math.min(segmentsPerBand, Math.floor((val / 255) * (segmentsPerBand - 0.5))) : 0;
 
           for (let j = 0; j < segmentsPerBand; j++) {
             const cy = height - (j * (segmentHeight + 1)) - segmentHeight / 2 - 1;
@@ -632,8 +630,7 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
         for (let i = 0; i < numBands; i++) {
           const x = i * (bandWidth + 1.5) + 1;
           const val = dataArray[i];
-          // Calibrated flame height so sparks have breathing room at top and don't slam the ceiling
-          const litHeight = powered ? (val / 255) * (height * 0.84) : 0;
+          const litHeight = powered ? Math.min(height * 0.92, (val / 255) * height * 0.85) : 0;
 
           if (litHeight > 0) {
             const grad = ctx.createLinearGradient(0, height, 0, height - litHeight);
@@ -1224,9 +1221,9 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
         const x = i * (bandWidth + 1.5) + 1;
         const val = dataArray[i]; 
         
-        // Calibrated headroom (0.86) to prevent visualizer bars from continuously slamming the top at max volume
+        // Dynamic intensity: authentic vintage response without ceiling pinning
         const targetSegments = (powered && !isBooting) 
-          ? Math.min(segmentsPerBand - 1, Math.floor((val / 255) * segmentsPerBand * 0.86)) 
+          ? Math.min(segmentsPerBand, Math.floor((val / 255) * (segmentsPerBand - 0.5))) 
           : 0;
         
         // Peak hold physics

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { AudioEngine, EqBand, EQ_BANDS } from '../audio/AudioEngine';
-import { YouTubeManager, extractYouTubeId } from '../audio/YouTubeManager';
+import { YouTubeManager, extractYouTubeId, extractYouTubePlaylistId } from '../audio/YouTubeManager';
 
 export type StereoMode = 'RADIO' | 'TAPE' | 'CD' | 'AUX' | 'USB';
 export type StereoTheme = 
@@ -203,6 +203,9 @@ export function useStereo() {
   useEffect(() => {
     const unsub = ytManager.current.onStateChange(state => {
       setPlaying(state.isPlaying);
+      if (state.title) {
+        setYtTitle(state.title.toUpperCase());
+      }
     });
     return unsub;
   }, []);
@@ -429,8 +432,35 @@ export function useStereo() {
       return;
     }
 
-    // 4. Check for YouTube (Video ID, youtu.be, or youtube.com)
+    // 4. Check for YouTube Playlist or Video
+    const playlistId = extractYouTubePlaylistId(cleanUrl);
     const videoId = extractYouTubeId(cleanUrl);
+
+    if (playlistId) {
+      setActiveStreamEmbed(null);
+      engine.current.pause();
+      setYtTitle('TUNING IN YT PLAYLIST...');
+
+      try {
+        const infoRes = await fetch(`/api/yt/info?url=${encodeURIComponent(cleanUrl)}`);
+        if (infoRes.ok) {
+          const info = await infoRes.json();
+          setYtTitle(info.title ? info.title.toUpperCase() : `YT LIST: ${playlistId.slice(0, 10)}`);
+        } else {
+          setYtTitle(`YT LIST: ${playlistId.slice(0, 10)}`);
+        }
+      } catch {
+        setYtTitle(`YT LIST: ${playlistId.slice(0, 10)}`);
+      }
+
+      ytManager.current.loadPlaylist(playlistId);
+      ytManager.current.setVolume(volume, attenuated);
+      setPlaying(true);
+      setCurrentTrack(1);
+      showToast('YOUTUBE PLAYLIST LOADED');
+      return;
+    }
+
     if (videoId) {
       setActiveStreamEmbed(null);
       // Pause native engine
@@ -736,6 +766,9 @@ export function useStereo() {
         showToast(`FM ${next.toFixed(1)} MHz`);
         return next;
       }); 
+    } else if (ytManager.current.isYtActive) {
+      ytManager.current.nextVideo();
+      showToast('NEXT TRACK');
     }
   };
 
@@ -747,6 +780,9 @@ export function useStereo() {
         showToast(`FM ${next.toFixed(1)} MHz`);
         return next;
       }); 
+    } else if (ytManager.current.isYtActive) {
+      ytManager.current.previousVideo();
+      showToast('PREV TRACK');
     }
   };
 

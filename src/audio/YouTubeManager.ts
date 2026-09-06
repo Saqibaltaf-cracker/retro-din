@@ -13,11 +13,26 @@ export function extractYouTubeId(url: string): string | null {
   return null;
 }
 
+export function extractYouTubePlaylistId(url: string): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+  // Standard YouTube playlist IDs typically begin with PL, UU, LL, RD, or OLAK5uy_
+  const match = trimmed.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  if (/^(?:PL|UU|LL|RD|OLAK5uy_)[\w-]{10,}$/.test(trimmed)) {
+    return trimmed;
+  }
+  return null;
+}
+
 export class YouTubeManager {
   private static instance: YouTubeManager;
   private player: any = null;
   private isReady = false;
   private pendingVideoId: string | null = null;
+  private pendingPlaylistId: string | null = null;
   private stateChangeCallbacks: Array<(state: { isPlaying: boolean; title?: string }) => void> = [];
   public isYtActive = false;
   public isHardwareMuted = false;
@@ -87,7 +102,11 @@ export class YouTubeManager {
       events: {
         onReady: () => {
           this.isReady = true;
-          if (this.pendingVideoId) {
+          if (this.pendingPlaylistId) {
+            const pid = this.pendingPlaylistId;
+            this.pendingPlaylistId = null;
+            this.loadPlaylist(pid);
+          } else if (this.pendingVideoId) {
             const vid = this.pendingVideoId;
             this.pendingVideoId = null;
             this.loadVideo(vid);
@@ -96,7 +115,16 @@ export class YouTubeManager {
         onStateChange: (event: any) => {
           // 1 = PLAYING, 2 = PAUSED, 0 = ENDED, 3 = BUFFERING
           const isPlaying = event.data === 1;
-          this.notifyStateChange(isPlaying);
+          let trackTitle: string | undefined = undefined;
+          try {
+            if (this.player && typeof this.player.getVideoData === 'function') {
+              const data = this.player.getVideoData();
+              if (data && data.title) {
+                trackTitle = data.title;
+              }
+            }
+          } catch {}
+          this.notifyStateChange(isPlaying, trackTitle);
         },
         onError: (err: any) => {
           console.warn("YouTube Player error:", err);
@@ -113,8 +141,8 @@ export class YouTubeManager {
     };
   }
 
-  private notifyStateChange(isPlaying: boolean) {
-    this.stateChangeCallbacks.forEach(cb => cb({ isPlaying }));
+  private notifyStateChange(isPlaying: boolean, title?: string) {
+    this.stateChangeCallbacks.forEach(cb => cb({ isPlaying, title }));
   }
 
   public setHardwareMute(mute: boolean) {
@@ -149,6 +177,47 @@ export class YouTubeManager {
       }
     } catch (e) {
       console.error("Failed to load video in YT Player", e);
+    }
+  }
+
+  public loadPlaylist(playlistId: string) {
+    this.isYtActive = true;
+    if (!this.isReady || !this.player) {
+      this.pendingPlaylistId = playlistId;
+      return;
+    }
+
+    try {
+      this.player.loadPlaylist({
+        list: playlistId,
+        listType: 'playlist',
+        index: 0,
+        startSeconds: 0
+      });
+      if (!this.isHardwareMuted) {
+        this.player.playVideo();
+      } else {
+        this.player.mute();
+        this.player.pauseVideo();
+      }
+    } catch (e) {
+      console.error("Failed to load playlist in YT Player", e);
+    }
+  }
+
+  public nextVideo() {
+    if (this.player && this.isReady && this.isYtActive) {
+      try {
+        this.player.nextVideo();
+      } catch (e) {}
+    }
+  }
+
+  public previousVideo() {
+    if (this.player && this.isReady && this.isYtActive) {
+      try {
+        this.player.previousVideo();
+      } catch (e) {}
     }
   }
 

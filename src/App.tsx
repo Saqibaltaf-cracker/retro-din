@@ -52,14 +52,48 @@ export default function App() {
   const showRotatePrompt = !isolated && isPortraitMode && !bypassPortrait && (diagnostics.isMobile || windowDimensions.width < 640);
 
   useEffect(() => {
-    const handleResize = () => {
-      setWindowDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
+    const updateDimensions = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setWindowDimensions({ width: w, height: h });
+
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) ||
+        ('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0);
+
+      // In mobile browser, turning phone landscape -> go straight to carplay mode!
+      if (isMobile && w > h && w >= 480) {
+        setIsolated(true);
+        // Attempt fullscreen if permitted
+        try {
+          const docEl = document.documentElement as any;
+          if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
+            const req = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+            if (req) {
+              const p = req.call(docEl, { navigationUI: 'hide' });
+              if (p && typeof p.catch === 'function') p.catch(() => {});
+            }
+          }
+        } catch (e) {}
+      } else if (isMobile && h > w) {
+        // Rotating back to portrait exits CarPlay mode
+        setIsolated(false);
+      }
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    window.addEventListener('resize', updateDimensions);
+    window.addEventListener('orientationchange', updateDimensions);
+    if (window.screen && window.screen.orientation) {
+      window.screen.orientation.addEventListener('change', updateDimensions);
+    }
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      window.removeEventListener('orientationchange', updateDimensions);
+      if (window.screen && window.screen.orientation) {
+        window.screen.orientation.removeEventListener('change', updateDimensions);
+      }
+    };
   }, []);
 
   const prevSilverRef = React.useRef(perfSettings.vintageSilver);
@@ -237,16 +271,52 @@ export default function App() {
   const toggleCarPlayMode = () => {
     setIsolated(prev => {
       const next = !prev;
+      setZoomMultiplier(1.0);
       if (next) {
-        setZoomMultiplier(1.0);
-        if (!document.fullscreenElement && document.fullscreenEnabled) {
-          document.documentElement.requestFullscreen().catch(() => {});
-        }
+        try {
+          const docEl = document.documentElement as any;
+          if (!document.fullscreenElement && !(document as any).webkitFullscreenElement) {
+            const req = docEl.requestFullscreen || 
+                        docEl.webkitRequestFullscreen || 
+                        docEl.webkitRequestFullScreen || 
+                        docEl.mozRequestFullScreen || 
+                        docEl.msRequestFullscreen;
+            if (req) {
+              const res = req.call(docEl, { navigationUI: 'hide' });
+              if (res && typeof res.catch === 'function') {
+                res.catch(() => {});
+              }
+            }
+          }
+        } catch (e) {}
+
+        try {
+          if (window.screen && (window.screen.orientation as any)?.lock) {
+            (window.screen.orientation as any).lock('landscape').catch(() => {});
+          }
+        } catch (e) {}
       } else {
-        setZoomMultiplier(1.0);
-        if (document.fullscreenElement) {
-          document.exitFullscreen().catch(() => {});
-        }
+        try {
+          const doc = document as any;
+          if (document.fullscreenElement || doc.webkitFullscreenElement) {
+            const exit = doc.exitFullscreen || 
+                         doc.webkitExitFullscreen || 
+                         doc.mozCancelFullScreen || 
+                         doc.msExitFullscreen;
+            if (exit) {
+              const res = exit.call(doc);
+              if (res && typeof res.catch === 'function') {
+                res.catch(() => {});
+              }
+            }
+          }
+        } catch (e) {}
+
+        try {
+          if (window.screen && (window.screen.orientation as any)?.unlock) {
+            (window.screen.orientation as any).unlock();
+          }
+        } catch (e) {}
       }
       return next;
     });
@@ -290,7 +360,7 @@ export default function App() {
   const currentScale = isolated ? isolatedScale : normalScale;
 
   return (
-    <div className={`w-screen min-w-[100vw] max-w-[100vw] ${isolated ? 'h-screen min-h-[100vh] max-h-[100vh] overflow-hidden bg-black' : 'min-h-screen overflow-x-hidden bg-[#0a0a0c]'} flex flex-col items-center ${isolated ? 'justify-center p-0 m-0' : 'justify-between'} relative font-sans select-none`}>
+    <div className={`w-screen min-w-[100vw] max-w-[100vw] ${isolated ? 'fixed inset-0 h-[100dvh] min-h-[100dvh] max-h-[100dvh] z-40 overflow-hidden bg-black' : 'min-h-screen overflow-x-hidden bg-[#0a0a0c]'} flex flex-col items-center ${isolated ? 'justify-center p-0 m-0' : 'justify-between'} relative font-sans select-none`}>
       
       {/* Top Controls: Distinct states for Normal vs Isolated mode */}
       {isolated ? (

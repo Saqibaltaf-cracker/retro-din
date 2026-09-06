@@ -47,8 +47,6 @@ export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false, stereo
                 setMode={stereoState.setMode}
                 openStreamDialog={stereoState.openStreamDialog}
                 perfSettings={perfSettings}
-                isolated={isolated}
-                onToggleCarPlay={onToggleCarPlay}
               />
               <Equalizer 
                 eq={stereoState.eq} 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause } from 'lucide-react';
+import { Play, Pause, Rewind, FastForward, ChevronDown, ChevronUp } from 'lucide-react';
 import { StereoMode } from '../hooks/useStereo';
 import { RotaryDial } from './RotaryDial';
 
@@ -73,20 +73,22 @@ export const LeftControls: React.FC<Props> = ({
           <button 
             onClick={seekRev} 
             disabled={!powered} 
-            className={`btn-backlit h-5 text-[7px] flex items-center justify-center relative font-bold ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-1 relative font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
             style={{ '--boot-delay': '0.1s' } as React.CSSProperties}
             title="Rewind 10s"
           >
-            &#9664;&#9664; REW
+            <Rewind className="w-2.5 h-2.5 flex-shrink-0" />
+            <span>REW</span>
           </button>
           <button 
             onClick={seekFwd} 
             disabled={!powered} 
-            className={`btn-backlit h-5 text-[7px] flex items-center justify-center relative font-bold ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-1 relative font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
             style={{ '--boot-delay': '0.2s' } as React.CSSProperties}
             title="Fast Forward 10s"
           >
-            FF &#9654;&#9654;
+            <span>FF</span>
+            <FastForward className="w-2.5 h-2.5 flex-shrink-0" />
           </button>
         </div>
 
@@ -94,20 +96,22 @@ export const LeftControls: React.FC<Props> = ({
           <button 
             onClick={tuneDown} 
             disabled={!powered} 
-            className={`btn-backlit h-5 text-[7px] flex items-center justify-center font-bold ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-0.5 font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
             style={{ '--boot-delay': '0.12s' } as React.CSSProperties}
-            title="Tune Down"
+            title="Tune Down / Prev Track"
           >
-            &#9664; TUNE v
+            <ChevronDown className="w-2.5 h-2.5 flex-shrink-0" />
+            <span>TUNE -</span>
           </button>
           <button 
             onClick={tuneUp} 
             disabled={!powered} 
-            className={`btn-backlit h-5 text-[7px] flex items-center justify-center font-bold ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-0.5 font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
             style={{ '--boot-delay': '0.22s' } as React.CSSProperties}
-            title="Tune Up"
+            title="Tune Up / Next Track"
           >
-            TUNE ^ &#9654;
+            <span>TUNE +</span>
+            <ChevronUp className="w-2.5 h-2.5 flex-shrink-0" />
           </button>
         </div>
       </div>

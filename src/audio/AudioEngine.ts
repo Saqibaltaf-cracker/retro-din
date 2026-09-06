@@ -19,10 +19,13 @@ export class AudioEngine {
   private isInitialized = false;
   public isSynthPlaying = false;
   public isHardwareMuted = false;
+  private snareNoiseBuffer: AudioBuffer | null = null;
+  private hihatNoiseBuffer: AudioBuffer | null = null;
 
   private constructor() {
     this.audioElement = new Audio();
     this.audioElement.crossOrigin = "anonymous";
+    this.audioElement.preload = "auto";
   }
 
   public static getInstance(): AudioEngine {
@@ -36,7 +39,9 @@ export class AudioEngine {
     if (this.isInitialized) return;
     
     try {
-      this.context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      this.context = new AudioCtx({ latencyHint: 'interactive' });
+      this.initNoiseBuffers();
       this.sourceNode = this.context.createMediaElementSource(this.audioElement);
       
       this.analyser = this.context.createAnalyser();
@@ -83,6 +88,21 @@ export class AudioEngine {
     } catch (err) {
       console.warn("AudioContext init error:", err);
     }
+  }
+
+  private initNoiseBuffers() {
+    if (!this.context) return;
+    try {
+      const snareLen = Math.floor(this.context.sampleRate * 0.12);
+      this.snareNoiseBuffer = this.context.createBuffer(1, snareLen, this.context.sampleRate);
+      const snareData = this.snareNoiseBuffer.getChannelData(0);
+      for (let i = 0; i < snareLen; i++) snareData[i] = Math.random() * 2 - 1;
+
+      const hatLen = Math.floor(this.context.sampleRate * 0.05);
+      this.hihatNoiseBuffer = this.context.createBuffer(1, hatLen, this.context.sampleRate);
+      const hatData = this.hihatNoiseBuffer.getChannelData(0);
+      for (let i = 0; i < hatLen; i++) hatData[i] = Math.random() * 2 - 1;
+    } catch (e) {}
   }
 
   public async resume() {
@@ -220,14 +240,9 @@ export class AudioEngine {
       }
 
       // 2. Snare / Clack on beats 4, 12
-      if (step === 4 || step === 12) {
-        const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.1, ctx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < noiseBuffer.length; i++) {
-          output[i] = Math.random() * 2 - 1;
-        }
+      if ((step === 4 || step === 12) && this.snareNoiseBuffer) {
         const whiteNoise = ctx.createBufferSource();
-        whiteNoise.buffer = noiseBuffer;
+        whiteNoise.buffer = this.snareNoiseBuffer;
         const filter = ctx.createBiquadFilter();
         filter.type = "highpass";
         filter.frequency.value = 1200;
@@ -241,12 +256,9 @@ export class AudioEngine {
       }
 
       // 3. Hi-Hat on every 2 steps (8th and 16th notes)
-      if (step % 2 === 0) {
-        const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < noiseBuffer.length; i++) output[i] = Math.random() * 2 - 1;
+      if (step % 2 === 0 && this.hihatNoiseBuffer) {
         const hat = ctx.createBufferSource();
-        hat.buffer = noiseBuffer;
+        hat.buffer = this.hihatNoiseBuffer;
         const filter = ctx.createBiquadFilter();
         filter.type = "bandpass";
         filter.frequency.value = 8500;
