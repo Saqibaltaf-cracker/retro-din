@@ -10,9 +10,10 @@ interface StereoDeckProps {
   isolated?: boolean;
   stereoState?: ReturnType<typeof useStereo>;
   perfSettings?: PerformanceSettings;
+  onToggleCarPlay?: () => void;
 }
 
-export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false, stereoState: propStereoState, perfSettings }) => {
+export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false, stereoState: propStereoState, perfSettings, onToggleCarPlay }) => {
   const localStereoState = useStereo();
   const stereoState = propStereoState || localStereoState;
 
@@ -46,6 +47,8 @@ export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false, stereo
                 setMode={stereoState.setMode}
                 openStreamDialog={stereoState.openStreamDialog}
                 perfSettings={perfSettings}
+                isolated={isolated}
+                onToggleCarPlay={onToggleCarPlay}
               />
               <Equalizer 
                 eq={stereoState.eq} 
@@ -65,6 +68,8 @@ export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false, stereo
               isBooting={stereoState.isBooting}
               isYtPlaying={stereoState.isYtPlaying}
               openStreamDialog={stereoState.openStreamDialog}
+              isolated={isolated}
+              onToggleCarPlay={onToggleCarPlay}
             />
             
           </div>

@@ -210,10 +210,9 @@ export default function App() {
         return;
       }
 
-      if (key === 'o' || key === 'O' || key === 'f' || key === 'F') {
+      if (key === 'o' || key === 'O' || key === 'f' || key === 'F' || key === 'p' || key === 'P') {
         e.preventDefault();
-        setIsolated(prev => !prev);
-        setZoomMultiplier(1.0);
+        toggleCarPlayMode();
         return;
       }
 
@@ -233,6 +232,25 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [stereo, showPlayerGuide, isolated, showSettingsModal]);
+
+  // Edge-to-edge CarPlay Fullscreen In-Car Mode Toggle
+  const toggleCarPlayMode = () => {
+    setIsolated(prev => {
+      const next = !prev;
+      if (next) {
+        setZoomMultiplier(1.0);
+        if (!document.fullscreenElement && document.fullscreenEnabled) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } else {
+        setZoomMultiplier(1.0);
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+      return next;
+    });
+  };
 
   // Synchronize pure black background on html & body elements when isolated
   useEffect(() => {
@@ -261,14 +279,13 @@ export default function App() {
   const paddingX = windowDimensions.width < 640 ? 8 : 28;
   const normalScale = Math.min(1, Math.max(0.32, (windowDimensions.width - paddingX) / PLAYER_W));
 
-  // Scale in isolated mode: make the player start comfortably big and fill available space
-  const availW = Math.max(300, windowDimensions.width - (windowDimensions.width < 640 ? 10 : 32));
-  const availH = Math.max(260, windowDimensions.height - (windowDimensions.width < 640 ? 10 : 32));
+  // Scale in isolated mode: edge-to-edge retro car player sizing
+  const availW = windowDimensions.width;
+  const availH = windowDimensions.height;
   const fitScale = Math.min(availW / PLAYER_W, availH / PLAYER_H);
 
-  // Big, clear, and prominent in isolated mode
-  const baseScale = Math.min(1.35, Math.max(0.45, fitScale * 0.95));
-  const isolatedScale = Math.min(1.7, Math.max(0.35, baseScale * zoomMultiplier));
+  // Pure edge-to-edge fit in in-car fullscreen mode
+  const isolatedScale = fitScale * zoomMultiplier;
 
   const currentScale = isolated ? isolatedScale : normalScale;
 
@@ -532,6 +549,7 @@ export default function App() {
               isolated={isolated} 
               stereoState={stereo} 
               perfSettings={perfSettings}
+              onToggleCarPlay={toggleCarPlayMode}
             />
           </div>
         </div>

@@ -304,13 +304,15 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
               count++;
             }
             let avg = count > 0 ? (sum / count) : 0;
-            const tilt = Math.pow((i + 1) / numBands, 0.38) * 1.5;
-            const boosted = Math.min(255, Math.floor(avg * tilt));
+            // Calibrated tilt and headroom to prevent slamming into the top ceiling at max volume
+            const headroomFactor = 0.82;
+            const tilt = Math.pow((i + 1) / numBands, 0.32) * 1.25;
+            const boosted = Math.min(235, Math.floor(avg * tilt * headroomFactor));
 
             dataArray[i] = boosted;
             totalEnergy += boosted;
           }
-          if (totalEnergy > 80) {
+          if (totalEnergy > 60) {
             isRealAudio = true;
           }
         }
@@ -328,14 +330,14 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
             let bandVal = 0;
 
             if (normPos < 0.25) {
-              const bassLine = 0.5 + 0.5 * Math.sin(now * 0.006 + i * 0.6);
-              bandVal = (kickImpact * 200) + (bassLine * 90);
+              const bassLine = 0.45 + 0.45 * Math.sin(now * 0.006 + i * 0.6);
+              bandVal = (kickImpact * 140) + (bassLine * 65);
             } else if (normPos < 0.65) {
-              const melody = 0.5 + 0.5 * Math.sin(now * 0.008 + i * 0.75) * Math.cos(now * 0.004 - i * 0.35);
-              bandVal = (snareImpact * 160) + (melody * 140);
+              const melody = 0.45 + 0.45 * Math.sin(now * 0.008 + i * 0.75) * Math.cos(now * 0.004 - i * 0.35);
+              bandVal = (snareImpact * 115) + (melody * 90);
             } else {
-              const sparkle = 0.4 + 0.6 * Math.sin(now * 0.018 + i * 1.2);
-              bandVal = (hihatPulse * 125) + (sparkle * 95);
+              const sparkle = 0.35 + 0.45 * Math.sin(now * 0.018 + i * 1.2);
+              bandVal = (hihatPulse * 85) + (sparkle * 70);
             }
 
             let eqFactor = 1;
@@ -349,8 +351,8 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
               else eqFactor = Math.max(0.3, 1 + engine.getEqGain(10000) / 16);
             }
 
-            const jitter = (Math.sin(now * 0.045 + i * 9.2) * 14);
-            dataArray[i] = Math.min(255, Math.max(12, Math.floor((bandVal + jitter) * eqFactor)));
+            const jitter = (Math.sin(now * 0.045 + i * 9.2) * 8);
+            dataArray[i] = Math.min(230, Math.max(10, Math.floor((bandVal + jitter) * eqFactor * 0.82)));
           }
 
           for (let w = 0; w < 128; w++) {
@@ -585,7 +587,8 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
         for (let i = 0; i < numBands; i++) {
           const cx = i * (bandWidth + 1.5) + bandWidth / 2 + 1;
           const val = dataArray[i];
-          const litSegments = powered ? Math.floor((val / 255) * segmentsPerBand) : 0;
+          // Calibrated headroom to prevent sticking to the top ceiling
+          const litSegments = powered ? Math.min(segmentsPerBand - 1, Math.floor((val / 255) * segmentsPerBand * 0.86)) : 0;
 
           for (let j = 0; j < segmentsPerBand; j++) {
             const cy = height - (j * (segmentHeight + 1)) - segmentHeight / 2 - 1;
@@ -600,21 +603,22 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
               dotColorOff = rgbInfo.off;
             } else {
               dotColor = j >= 13 ? colors.danger : (j >= 10 ? colors.secondary : colors.primary);
-              dotColorOff = colors.primaryOff;
+              dotColorOff = j >= 13 ? colors.dangerOff : (j >= 10 ? colors.secondaryOff : colors.primaryOff);
             }
 
-            ctx.fillStyle = isLit ? (isRgb ? dotColor : hexToRgba(dotColor, effectiveDimmer)) : (isRgb ? dotColorOff : hexToRgba(dotColorOff, 0.4));
+            // Bright vivid illumination on upper rows
+            ctx.fillStyle = isLit ? (isRgb ? dotColor : hexToRgba(dotColor, Math.min(1.0, effectiveDimmer * (j >= 10 ? 1.15 : 1.0)))) : (isRgb ? dotColorOff : hexToRgba(dotColorOff, 0.4));
             ctx.shadowColor = isLit ? dotColor : 'transparent';
-            ctx.shadowBlur = isLit ? 3 : 0;
+            ctx.shadowBlur = isLit ? (j >= 10 ? 4.5 : 3) : 0;
             ctx.beginPath();
             ctx.arc(cx, cy, dotR, 0, Math.PI * 2);
             ctx.fill();
 
             if (isLit) {
               ctx.shadowBlur = 0;
-              ctx.fillStyle = hexToRgba('#ffffff', 0.5 * effectiveDimmer);
+              ctx.fillStyle = hexToRgba('#ffffff', (j >= 10 ? 0.75 : 0.5) * effectiveDimmer);
               ctx.beginPath();
-              ctx.arc(cx, cy, 0.7, 0, Math.PI * 2);
+              ctx.arc(cx, cy, 0.75, 0, Math.PI * 2);
               ctx.fill();
             }
           }
@@ -628,7 +632,8 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
         for (let i = 0; i < numBands; i++) {
           const x = i * (bandWidth + 1.5) + 1;
           const val = dataArray[i];
-          const litHeight = powered ? (val / 255) * height : 0;
+          // Calibrated flame height so sparks have breathing room at top and don't slam the ceiling
+          const litHeight = powered ? (val / 255) * (height * 0.84) : 0;
 
           if (litHeight > 0) {
             const grad = ctx.createLinearGradient(0, height, 0, height - litHeight);
@@ -1219,7 +1224,10 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
         const x = i * (bandWidth + 1.5) + 1;
         const val = dataArray[i]; 
         
-        const targetSegments = (powered && !isBooting) ? Math.floor((val / 255) * segmentsPerBand) : 0;
+        // Calibrated headroom (0.86) to prevent visualizer bars from continuously slamming the top at max volume
+        const targetSegments = (powered && !isBooting) 
+          ? Math.min(segmentsPerBand - 1, Math.floor((val / 255) * segmentsPerBand * 0.86)) 
+          : 0;
         
         // Peak hold physics
         if (!isBooting) {
@@ -1252,38 +1260,49 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
             colorOff = rgbInfo.off;
           } else if (j >= 13) {
             colorOff = colors.dangerOff;
-            colorOn = hexToRgba(colors.danger, effectiveDimmer);
+            // Enhanced brightness multiplier for upper segments to banish dimness
+            colorOn = hexToRgba(colors.danger, Math.min(1.0, effectiveDimmer * 1.15));
           } else if (j >= 10) {
             colorOff = colors.secondaryOff;
-            colorOn = hexToRgba(colors.secondary, effectiveDimmer);
+            colorOn = hexToRgba(colors.secondary, Math.min(1.0, effectiveDimmer * 1.1));
           } else {
             colorOff = colors.primaryOff;
             colorOn = hexToRgba(colors.primary, effectiveDimmer);
           }
 
           if (visualizerMode === 'PEAK_FALL') {
-            // Peak fall mode highlights falling laser dots with dimmer base bars
+            // Peak fall mode highlights falling laser dots with bright illuminated bars
             if (isPeak) {
-              ctx.fillStyle = isRgb ? '#ffffff' : '#ffffff';
+              ctx.fillStyle = '#ffffff';
               ctx.shadowBlur = 6;
-              ctx.shadowColor = isRgb ? colorOn : colorOn;
+              ctx.shadowColor = isRgb ? colorOn : (j >= 13 ? colors.danger : colorOn);
               ctx.fillRect(x, y, bandWidth, segmentHeight);
             } else if (isLit) {
-              ctx.fillStyle = isRgb ? colorOn : hexToRgba(colorOn, 0.45);
-              ctx.shadowBlur = isRgb ? 2 : 0;
-              ctx.shadowColor = isRgb ? colorOn : 'transparent';
+              ctx.fillStyle = isRgb ? colorOn : hexToRgba(colorOn, 0.88);
+              ctx.shadowBlur = allowGlow ? (j >= 10 ? 3.5 : 2) : 0;
+              ctx.shadowColor = colorOn;
               ctx.fillRect(x, y, bandWidth, segmentHeight);
+              if (j >= 10 && allowGlow) {
+                ctx.fillStyle = hexToRgba('#ffffff', (j >= 13 ? 0.4 : 0.25) * effectiveDimmer);
+                ctx.fillRect(x, y, bandWidth, 1);
+              }
             } else {
               ctx.fillStyle = colorOff;
               ctx.shadowBlur = 0;
               ctx.fillRect(x, y, bandWidth, segmentHeight);
             }
           } else {
-            // Standard Classic BARS
+            // Standard Classic BARS: Upper segments get vivid phosphor glow and crisp highlight
             ctx.fillStyle = (isLit || isPeak) ? colorOn : colorOff;
-            ctx.shadowBlur = (isLit || isPeak && allowGlow) ? (isPeak ? 6 : (isRgb ? 4 : 3)) : 0;
-            ctx.shadowColor = (isLit || isPeak && allowGlow) ? colorOn : 'transparent';
+            ctx.shadowBlur = (isLit || isPeak && allowGlow) ? (isPeak ? 6 : (isRgb ? 4 : (j >= 11 ? 5 : 3))) : 0;
+            ctx.shadowColor = (isLit || isPeak && allowGlow) ? (isPeak ? '#ffffff' : (j >= 13 ? colors.danger : colorOn)) : 'transparent';
             ctx.fillRect(x, y, bandWidth, segmentHeight);
+
+            // Fluorescent crisp highlight on upper lit segments (j >= 10) so they stand out brightly
+            if (isLit && j >= 10 && allowGlow) {
+              ctx.fillStyle = hexToRgba('#ffffff', (j >= 13 ? 0.45 : 0.28) * effectiveDimmer);
+              ctx.fillRect(x, y, bandWidth, 1);
+            }
           }
         }
       }

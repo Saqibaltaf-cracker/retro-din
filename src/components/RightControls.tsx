@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { StereoMode } from '../hooks/useStereo';
 import { RotaryDial } from './RotaryDial';
+import { CarPlayIcon } from './CarPlayIcon';
 
 interface Props {
   powered: boolean;
@@ -25,6 +26,8 @@ interface Props {
   openStreamDialog?: () => void;
   bass: number;
   adjustBass: (val: number) => void;
+  isolated?: boolean;
+  onToggleCarPlay?: () => void;
 }
 
 export const RightControls: React.FC<Props> = ({ 
@@ -49,7 +52,9 @@ export const RightControls: React.FC<Props> = ({
   isYtPlaying = false,
   openStreamDialog,
   bass, 
-  adjustBass
+  adjustBass,
+  isolated = false,
+  onToggleCarPlay
 }) => {
   const usbInputRef = useRef<HTMLInputElement>(null);
   const auxInputRef = useRef<HTMLInputElement>(null);
@@ -224,16 +229,28 @@ export const RightControls: React.FC<Props> = ({
           </button>
         </div>
 
-        {/* Master COLOR Switch (Cycles 11 Backlit Hues) */}
-        <button 
-          onClick={cycleTheme} 
-          disabled={!powered} 
-          className={`btn-backlit h-6 text-[7.5px] font-bold tracking-wider flex items-center justify-center gap-1 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
-          style={{ '--boot-delay': '1.25s' } as React.CSSProperties}
-          title="Cycle All Backlight & Display Colors"
-        >
-          <span>COLOR</span>
-        </button>
+        {/* Master COLOR Switch (Cycles 11 Backlit Hues) & CarPlay In-Car Fullscreen Mode */}
+        <div className="grid grid-cols-2 gap-1">
+          <button 
+            onClick={cycleTheme} 
+            disabled={!powered} 
+            className={`btn-backlit h-6 text-[7px] font-bold tracking-wider flex items-center justify-center gap-1 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            style={{ '--boot-delay': '1.25s' } as React.CSSProperties}
+            title="Cycle All Backlight & Display Colors"
+          >
+            <span>COLOR</span>
+          </button>
+          <button 
+            onClick={onToggleCarPlay} 
+            disabled={!powered} 
+            className={`btn-backlit h-6 text-[7px] font-bold tracking-wider flex items-center justify-center gap-1 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${isolated ? 'active font-black shadow-[0_0_6px_var(--color-lcd-primary)]' : ''}`}
+            style={{ '--boot-delay': '1.28s' } as React.CSSProperties}
+            title={isolated ? "Exit In-Car Fullscreen Mode" : "CarPlay In-Car Mode (Fullscreen Edge-to-Edge)"}
+          >
+            <CarPlayIcon className="w-2.5 h-2.5" />
+            <span>CARPLAY</span>
+          </button>
+        </div>
       </div>
 
       {/* Ports: Realistic USB-A Socket & 3.5mm AUX Jack with Illuminated LED Borders */}

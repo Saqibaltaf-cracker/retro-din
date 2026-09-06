@@ -13,19 +13,19 @@
   --color-lcd-secondary: #ffbfe9;
   --color-lcd-secondary-rgb: 255, 191, 233;
   --color-lcd-secondary-off: #381a2e;
-  --color-lcd-danger: #ff4071;
-  --color-lcd-danger-off: #380816;
+  --color-lcd-danger: #ff3377;
+  --color-lcd-danger-off: #4a0d20;
 }
 
 :root[data-theme="green"] {
   --color-lcd-primary: #4af04a;
   --color-lcd-primary-rgb: 74, 240, 74;
   --color-lcd-primary-off: #122a12;
-  --color-lcd-secondary: #ff9900;
-  --color-lcd-secondary-rgb: 255, 153, 0;
+  --color-lcd-secondary: #ffaa00;
+  --color-lcd-secondary-rgb: 255, 170, 0;
   --color-lcd-secondary-off: #331a00;
-  --color-lcd-danger: #ff3333;
-  --color-lcd-danger-off: #3a1010;
+  --color-lcd-danger: #ff3852;
+  --color-lcd-danger-off: #420f18;
 }
 
 :root[data-theme="blue"] {
@@ -35,8 +35,8 @@
   --color-lcd-secondary: #c94af0;
   --color-lcd-secondary-rgb: 201, 74, 240;
   --color-lcd-secondary-off: #2a1233;
-  --color-lcd-danger: #ff3388;
-  --color-lcd-danger-off: #3a1020;
+  --color-lcd-danger: #ff3399;
+  --color-lcd-danger-off: #441228;
 }
 
 :root[data-theme="white"] {
@@ -46,19 +46,19 @@
   --color-lcd-secondary: #cccccc;
   --color-lcd-secondary-rgb: 204, 204, 204;
   --color-lcd-secondary-off: #1a1a1a;
-  --color-lcd-danger: #ff5555;
-  --color-lcd-danger-off: #331111;
+  --color-lcd-danger: #ff5266;
+  --color-lcd-danger-off: #421218;
 }
 
 :root[data-theme="amber"] {
   --color-lcd-primary: #ffaa00;
   --color-lcd-primary-rgb: 255, 170, 0;
   --color-lcd-primary-off: #332200;
-  --color-lcd-secondary: #ff5500;
-  --color-lcd-secondary-rgb: 255, 85, 0;
+  --color-lcd-secondary: #ff6600;
+  --color-lcd-secondary-rgb: 255, 102, 0;
   --color-lcd-secondary-off: #331100;
-  --color-lcd-danger: #ff0000;
-  --color-lcd-danger-off: #330000;
+  --color-lcd-danger: #ff3322;
+  --color-lcd-danger-off: #420c08;
 }
 
 :root[data-theme="pink"] {
@@ -68,8 +68,8 @@
   --color-lcd-secondary: #ffbfe9;
   --color-lcd-secondary-rgb: 255, 191, 233;
   --color-lcd-secondary-off: #381a2e;
-  --color-lcd-danger: #ff4071;
-  --color-lcd-danger-off: #380816;
+  --color-lcd-danger: #ff3377;
+  --color-lcd-danger-off: #4a0d20;
 }
 
 :root[data-theme="orange"] {
@@ -79,8 +79,8 @@
   --color-lcd-secondary: #ffbb00;
   --color-lcd-secondary-rgb: 255, 187, 0;
   --color-lcd-secondary-off: #382900;
-  --color-lcd-danger: #ff1100;
-  --color-lcd-danger-off: #380400;
+  --color-lcd-danger: #ff2d15;
+  --color-lcd-danger-off: #450c05;
 }
 
 :root[data-theme="red"] {
@@ -764,8 +764,8 @@ html[data-backlit-level="3"] .rotary-notch {
 .lcd-glass {
   background: #050605;
   box-shadow: 
-    inset 0 4px 18px rgba(0,0,0,1),
-    inset 0 0 3px rgba(255,255,255,0.08),
+    inset 0 1px 3px rgba(0,0,0,0.6),
+    inset 0 0 2px rgba(255,255,255,0.08),
     0 1px 0 rgba(255,255,255,0.05);
   position: relative;
   overflow: hidden;
