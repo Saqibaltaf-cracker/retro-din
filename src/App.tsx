@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { StereoDeck } from './components/StereoDeck';
 import { LeatherBackground } from './components/LeatherBackground';
 import { KeyBindingsModal } from './components/KeyBindingsModal';
@@ -729,7 +730,7 @@ export default function App() {
           }
         }}
       />
+      <Analytics />
     </div>
   );
 }
-
