@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStereo } from '../hooks/useStereo';
+import { PerformanceSettings } from '../hooks/usePerformanceSettings';
 import { LeftControls } from './LeftControls';
 import { RightControls } from './RightControls';
 import { MainDisplay } from './MainDisplay';
@@ -7,15 +8,18 @@ import { Equalizer } from './Equalizer';
 
 interface StereoDeckProps {
   isolated?: boolean;
+  stereoState?: ReturnType<typeof useStereo>;
+  perfSettings?: PerformanceSettings;
 }
 
-export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false }) => {
-  const stereoState = useStereo();
+export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false, stereoState: propStereoState, perfSettings }) => {
+  const localStereoState = useStereo();
+  const stereoState = propStereoState || localStereoState;
 
   return (
     <div className="relative flex flex-col items-center justify-center select-none">
       {/* Outer Dashboard Mount Frame (Completely stripped when isolated to show PLAYER ONLY) */}
-      <div className={`transition-all duration-300 relative ${
+      <div className={`outer-mount-frame transition-all duration-300 relative ${
         isolated 
           ? 'w-[836px] min-w-[836px] max-w-[836px] p-0 m-0 bg-transparent border-none shadow-none rounded-none' 
           : 'w-[880px] min-w-[880px] max-w-[880px] p-5 rounded-2xl bg-[#111215] border border-[#20242c] shadow-[inset_0_4px_18px_rgba(0,0,0,1),0_12px_35px_rgba(0,0,0,0.9),0_0_2px_rgba(255,255,255,0.06)]'
@@ -33,7 +37,7 @@ export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false }) => {
             />
             
             {/* Center Console: LCD Information Display & 7-Band Graphic Equalizer */}
-            <div className="w-[546px] min-w-[546px] max-w-[546px] h-full flex flex-col justify-between bg-[#0b0c0e] relative pt-0.5 flex-shrink-0 overflow-hidden">
+            <div className="center-console-panel w-[546px] min-w-[546px] max-w-[546px] h-full flex flex-col justify-between bg-[#0b0c0e] relative pt-0.5 flex-shrink-0 overflow-hidden">
               <MainDisplay 
                 {...stereoState} 
                 isBooting={stereoState.isBooting}
@@ -41,6 +45,7 @@ export const StereoDeck: React.FC<StereoDeckProps> = ({ isolated = false }) => {
                 setShowStreamDialog={stereoState.setShowStreamDialog}
                 setMode={stereoState.setMode}
                 openStreamDialog={stereoState.openStreamDialog}
+                perfSettings={perfSettings}
               />
               <Equalizer 
                 eq={stereoState.eq} 

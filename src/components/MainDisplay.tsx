@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { SpectrumAnalyzer } from './SpectrumAnalyzer';
 import { StereoMode, VisualizerMode, JDM_STATIONS } from '../hooks/useStereo';
 import { AudioEngine, EqBand } from '../audio/AudioEngine';
+import { PerformanceSettings } from '../hooks/usePerformanceSettings';
 
 interface Props {
   powered: boolean;
@@ -35,6 +36,13 @@ interface Props {
   setShowStreamDialog?: (val: boolean) => void;
   setMode?: (m: StereoMode) => void;
   openStreamDialog?: () => void;
+  perfSettings?: PerformanceSettings;
+  activeStreamEmbed?: {
+    type: 'spotify' | 'apple' | 'soundcloud' | 'direct' | 'none';
+    embedUrl: string;
+    rawUrl: string;
+  } | null;
+  setActiveStreamEmbed?: (val: any) => void;
 }
 
 export const MainDisplay: React.FC<Props> = ({ 
@@ -42,12 +50,14 @@ export const MainDisplay: React.FC<Props> = ({
   mtl, loudness, memory, tps, bSkip, rep, auto, playing = false, isYtPlaying = false,
   theme, selectMemory, visualizerMode = 'FIRE_SPECTRUM', cycleVisualizerMode, toastMessage,
   speakerBalance = 'CENTER', toggleSpeakerBalance, activePresetName = 'HIP-HOP',
-  showStreamDialog, setShowStreamDialog, setMode, openStreamDialog
+  showStreamDialog, setShowStreamDialog, setMode, openStreamDialog, perfSettings,
+  activeStreamEmbed, setActiveStreamEmbed
 }) => {
   const [internalShowYt, setInternalShowYt] = useState(false);
   const isStreamModalOpen = showStreamDialog !== undefined ? showStreamDialog : internalShowYt;
   const setStreamModalOpen = setShowStreamDialog || setInternalShowYt;
   const [ytUrl, setYtUrl] = useState('');
+  const [activePlatformTab, setActivePlatformTab] = useState<'all' | 'spotify' | 'apple' | 'youtube' | 'soundcloud' | 'direct'>('all');
   const [tapeAngle, setTapeAngle] = useState(0);
   const [bootStatusText, setBootStatusText] = useState('>> SYSTEM IGNITION <<');
   const [bootVuLevel, setBootVuLevel] = useState(0);
@@ -174,37 +184,133 @@ export const MainDisplay: React.FC<Props> = ({
     : 0;
 
   return (
-    <div className="flex-1 flex flex-col justify-between relative px-2 py-1 select-none h-[270px] min-h-[270px] max-h-[270px] w-[550px] min-w-[550px] max-w-[550px] flex-shrink-0 overflow-hidden">
-      {/* Web Stream & YouTube Modal */}
+    <div className="main-display-panel flex-1 flex flex-col justify-between relative px-2 py-1 select-none h-[270px] min-h-[270px] max-h-[270px] w-[550px] min-w-[550px] max-w-[550px] flex-shrink-0 overflow-hidden">
+      {/* CD & Universal Web Stream Hub Modal */}
       {isStreamModalOpen && (
-        <div className="absolute top-2 left-4 right-4 z-50 bg-[#0f0f0f] border-2 border-[#444] p-3 rounded shadow-2xl flex flex-col gap-2">
-          <div className="flex justify-between items-center border-b border-[#2a2a2a] pb-1.5">
+        <div className="absolute top-1 left-2 right-2 z-50 bg-[#0c0d10] border-2 border-[#333842] p-2.5 rounded shadow-[0_10px_30px_rgba(0,0,0,0.95)] flex flex-col gap-2">
+          <div className="flex justify-between items-center border-b border-[#222630] pb-1.5">
             <span className="text-[10px] font-label font-bold text-zinc-200 tracking-wider flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#ff3333] shadow-[0_0_6px_#ff3333]"></span>
-              WEB STREAM / YOUTUBE AUDIO
+              <span className="w-2 h-2 rounded-full bg-[#ff2233] shadow-[0_0_6px_#ff0022] animate-pulse"></span>
+              <span>CD & UNIVERSAL STREAM HUB</span>
             </span>
             <button 
               type="button" 
               onClick={() => setStreamModalOpen(false)} 
-              className="text-[10px] text-zinc-400 hover:text-white px-1.5 font-bold cursor-pointer"
+              className="text-[10px] text-zinc-400 hover:text-white px-2 py-0.5 rounded bg-zinc-800/60 font-bold cursor-pointer transition-colors"
             >
-              X
+              ✕
             </button>
           </div>
 
-          <form onSubmit={handleYtSubmit} className="flex gap-1.5 mt-1">
+          {/* Quick Platform Filter Tabs */}
+          <div className="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none">
+            {[
+              { id: 'all', label: '🌐 All Streams' },
+              { id: 'youtube', label: '🔴 YouTube' },
+              { id: 'spotify', label: '🟢 Spotify' },
+              { id: 'apple', label: '🍎 Apple Music' },
+              { id: 'soundcloud', label: '🟠 SoundCloud' },
+              { id: 'direct', label: '📻 Web Radio' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActivePlatformTab(tab.id as any)}
+                className={`px-2 py-0.5 rounded text-[8.5px] font-mono whitespace-nowrap cursor-pointer transition-colors ${
+                  activePlatformTab === tab.id
+                    ? 'bg-zinc-700 text-white font-bold shadow-sm'
+                    : 'bg-[#15171d] text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <form onSubmit={handleYtSubmit} className="flex gap-1.5">
             <input 
               autoFocus
               type="text" 
-              placeholder="Paste YouTube Link or Video ID"
+              placeholder="Paste Spotify, Apple Music, YouTube, SoundCloud, or Stream URL..."
               value={ytUrl}
               onChange={e => setYtUrl(e.target.value)}
-              className="flex-1 bg-black text-[10px] font-mono text-emerald-400 p-1.5 outline-none border border-[#333] rounded-sm focus:border-emerald-500"
+              className="flex-1 bg-black text-[9.5px] font-mono text-emerald-400 p-1.5 outline-none border border-[#2a2e38] rounded-sm focus:border-emerald-500 placeholder:text-zinc-600"
             />
-            <button type="submit" className="bg-[#242424] hover:bg-[#333] text-[9px] font-label text-white px-3 border border-[#555] rounded-sm font-bold active:scale-95 cursor-pointer">
-              LOAD
+            <button type="submit" className="bg-[#1e222a] hover:bg-[#2c3240] text-[9px] font-label text-white px-3 py-1.5 border border-[#444c5c] rounded-sm font-bold active:scale-95 cursor-pointer whitespace-nowrap transition-all">
+              PLAY STREAM
             </button>
           </form>
+
+          {/* Instant Presets & Curated Streams */}
+          <div className="pt-1 border-t border-[#1d212b]">
+            <div className="text-[8px] font-mono uppercase tracking-wider text-zinc-500 mb-1 font-bold">
+              Quick Preset Stream Stations:
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
+              <button
+                type="button"
+                onClick={() => {
+                  loadYoutubeUrl('https://www.youtube.com/watch?v=jfKfPfyJRdk');
+                  setStreamModalOpen(false);
+                }}
+                className="p-1 rounded bg-[#12141a] hover:bg-[#1c202a] border border-white/5 text-left text-[8px] font-mono text-zinc-300 hover:text-white cursor-pointer truncate transition-colors flex items-center gap-1"
+              >
+                <span className="text-[#ff3333]">▶</span>
+                <span className="truncate">YouTube Lo-Fi Beats</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  loadYoutubeUrl('https://open.spotify.com/playlist/37i9dQZF1DXdLEN7aqioXM');
+                  setStreamModalOpen(false);
+                }}
+                className="p-1 rounded bg-[#12141a] hover:bg-[#1c202a] border border-white/5 text-left text-[8px] font-mono text-zinc-300 hover:text-white cursor-pointer truncate transition-colors flex items-center gap-1"
+              >
+                <span className="text-[#1db954]">●</span>
+                <span className="truncate">Spotify Synthwave</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  loadYoutubeUrl('https://music.apple.com/us/playlist/top-100-global/pl.d25f5d11e9a349518d66703ba6e76e44');
+                  setStreamModalOpen(false);
+                }}
+                className="p-1 rounded bg-[#12141a] hover:bg-[#1c202a] border border-white/5 text-left text-[8px] font-mono text-zinc-300 hover:text-white cursor-pointer truncate transition-colors flex items-center gap-1"
+              >
+                <span className="text-[#fc3c44]">★</span>
+                <span className="truncate">Apple Music Top 100</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  loadYoutubeUrl('https://icecast.skyrock.net/s/natio_mp3_128k');
+                  setStreamModalOpen(false);
+                }}
+                className="p-1 rounded bg-[#12141a] hover:bg-[#1c202a] border border-white/5 text-left text-[8px] font-mono text-zinc-300 hover:text-white cursor-pointer truncate transition-colors flex items-center gap-1"
+              >
+                <span className="text-[#00e5ff]">📻</span>
+                <span className="truncate">Tokyo FM Direct</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Background Stream Player (No platform banner displayed on stereo display) */}
+      {activeStreamEmbed && (
+        <div className="absolute -left-[9999px] -top-[9999px] w-1 h-1 opacity-0 pointer-events-none overflow-hidden" aria-hidden="true">
+          <iframe
+            src={activeStreamEmbed.embedUrl}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            tabIndex={-1}
+            title="Stream audio player"
+          />
         </div>
       )}
 
@@ -224,29 +330,45 @@ export const MainDisplay: React.FC<Props> = ({
               setMode('CD');
             }
           }}
-          className="w-full h-4 bg-gradient-to-b from-[#18191c] via-[#08090b] to-[#040405] rounded-[2px] border border-[#22252b] hover:border-[#444a57] shadow-[inset_0_3px_6px_rgba(0,0,0,0.98),inset_0_-1px_1px_rgba(255,255,255,0.06)] relative flex items-center px-3 overflow-hidden cursor-pointer group/cd transition-all duration-200"
-          title="CD Port - Click to Open Stream Options"
+          className="cd-inlet-housing w-full h-4 bg-gradient-to-b from-[#18191c] via-[#08090b] to-[#040405] rounded-[2px] border border-[#22252b] hover:border-[#444a57] shadow-[inset_0_3px_6px_rgba(0,0,0,0.98),inset_0_-1px_1px_rgba(255,255,255,0.06)] relative flex items-center px-3 overflow-hidden cursor-pointer group/cd transition-all duration-200"
+          title="CD & Universal Stream Hub - Click to Open Spotify, Apple Music, YouTube, or Stream"
         >
            {/* Top and bottom subtle felt dust wiper lips */}
            <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-[#0d0d0f] shadow-[0_1px_0_rgba(0,0,0,0.9)]" />
            <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#0d0d0f] shadow-[0_-1px_0_rgba(0,0,0,0.9)]" />
            {/* Deep recessed empty CD slot cavity */}
            <div className="w-full h-[2px] bg-black shadow-[inset_0_1px_2px_rgba(0,0,0,1)] group-hover/cd:bg-zinc-800 transition-colors" />
-           {/* Minimalist CD slot alignment status LED and silkscreen */}
+           
+           {/* Minimalist CD slot alignment status LED inside deep black hole and silkscreen */}
            <div className="absolute left-2.5 flex items-center gap-1.5 pointer-events-none">
-             <div className={`w-1 h-1 rounded-full transition-colors ${powered ? 'bg-[var(--color-lcd-secondary)] shadow-[0_0_3px_var(--color-lcd-secondary)]' : 'bg-zinc-700'}`} />
-             <span className="text-[5.5px] font-label tracking-widest text-zinc-500 font-bold group-hover/cd:text-zinc-300 transition-colors">CD INLET / STREAM</span>
+             {/* Deep Black Recessed LED Hole */}
+             <div className="w-2 h-2 rounded-full bg-black border border-black shadow-[inset_0_1px_2px_#000] flex items-center justify-center flex-shrink-0">
+               <div className={`w-1 h-1 rounded-full transition-colors ${powered ? 'bg-[var(--color-lcd-secondary)] shadow-[0_0_3px_var(--color-lcd-secondary)]' : 'bg-zinc-800'}`} />
+             </div>
+             <span className="branding-text text-[5.5px] font-label tracking-widest text-zinc-500 font-bold group-hover/cd:text-zinc-300 transition-colors">CD INLET / STREAM</span>
            </div>
-           <div className="absolute right-2.5 text-[5.5px] font-label tracking-widest text-zinc-500 font-bold pointer-events-none flex items-center gap-1 group-hover/cd:text-zinc-300 transition-colors">
+           <div className="branding-text absolute right-2.5 text-[5.5px] font-label tracking-widest text-zinc-500 font-bold pointer-events-none flex items-center gap-1 group-hover/cd:text-zinc-300 transition-colors">
              <span>COMPACT DISC DIGITAL AUDIO</span>
              <div className="w-1.5 h-1 border border-zinc-700 rounded-[0.5px]" />
            </div>
         </div>
 
-        {/* Tape / Web Stream Slot - Empty by default, opens streamer on click */}
+        {/* Tape / Web Stream Slot with Whitish Neon Red Cassette LEDs in Pitch Black Holes */}
         <div className="flex items-center gap-2">
-          <div className="w-[11px] h-[11px] rounded-full bg-[#050505] border border-[#333] shadow-inner flex items-center justify-center">
-            <div className="w-[4px] h-[4px] rounded-full bg-black"></div>
+          {/* Left Cassette LED in deep pitch black hole - pulses whitish neon red when playing */}
+          <div 
+            className="w-2 h-2 rounded-full bg-black border border-black shadow-[inset_0_1px_2px_#000] flex items-center justify-center flex-shrink-0"
+            title="Cassette Deck Optical Sensor (Left)"
+          >
+            <div 
+              className={`w-1 h-1 rounded-full transition-all duration-200 ${
+                powered 
+                  ? (playing 
+                      ? (perfSettings?.cassetteLedBeep !== false ? 'animate-cassette-beep border border-black/60' : 'cassette-neon-solid border border-black/60') 
+                      : 'bg-[#3d0407] border border-black/80 opacity-60')
+                  : 'bg-black opacity-30'
+              }`} 
+            />
           </div>
           
           {/* Cassette Slot - Pure Black and Empty with No Text, No Gradient */}
@@ -284,12 +406,24 @@ export const MainDisplay: React.FC<Props> = ({
             </div>
           </div>
           
-          <div className="w-[11px] h-[11px] rounded-full bg-[#050505] border border-[#333] shadow-inner flex items-center justify-center">
-            <div className="w-[4px] h-[4px] rounded-full bg-black"></div>
+          {/* Right Cassette LED in deep pitch black hole - pulses whitish neon red when playing */}
+          <div 
+            className="w-2 h-2 rounded-full bg-black border border-black shadow-[inset_0_1px_2px_#000] flex items-center justify-center flex-shrink-0"
+            title="Cassette Deck Optical Sensor (Right)"
+          >
+            <div 
+              className={`w-1 h-1 rounded-full transition-all duration-200 ${
+                powered 
+                  ? (playing 
+                      ? (perfSettings?.cassetteLedBeep !== false ? 'animate-cassette-beep border border-black/60' : 'cassette-neon-solid border border-black/60') 
+                      : 'bg-[#3d0407] border border-black/80 opacity-60')
+                  : 'bg-black opacity-30'
+              }`} 
+            />
           </div>
 
           {/* Logic Control Deck Badges (Japanese Localization) */}
-          <div className="flex items-center gap-1.5 ml-2 flex-shrink-0 whitespace-nowrap">
+          <div className="branding-deck-badges flex items-center gap-1.5 ml-2 flex-shrink-0 whitespace-nowrap">
             <span className={`text-[7px] font-label tracking-wider font-bold transition-all duration-300 ${powered ? 'text-[var(--color-lcd-primary)] drop-shadow-[0_0_2px_var(--color-lcd-primary)]' : 'text-zinc-400'}`}>
               ロジック デッキ
             </span>
@@ -556,17 +690,21 @@ export const MainDisplay: React.FC<Props> = ({
         </div>
 
         {/* Right Side: Spectrum Analyzer with Frequency Scale & Visualizer (Always Fixed Width & Fully Visible) */}
-        <div className="w-[270px] min-w-[270px] max-w-[270px] h-full relative pl-2 border-l border-[rgba(255,255,255,0.08)] flex flex-col justify-between flex-shrink-0">
+        <div className="visualizer-bezel-frame w-[270px] min-w-[270px] max-w-[270px] h-full relative pl-2 pr-1.5 border-l border-r border-l-[rgba(255,255,255,0.08)] border-r-[rgba(255,255,255,0.15)] flex flex-col justify-between flex-shrink-0">
           <div className="flex-1 w-full h-[135px] relative overflow-hidden flex items-center justify-center">
             <SpectrumAnalyzer 
               engine={engine} 
               powered={powered} 
-              dimmerLevel={dimmerLevel} 
+              dimmerLevel={perfSettings?.vintageSilver ? 1 : dimmerLevel} 
               isBooting={isBooting} 
               isYtPlaying={isYtPlaying}
               playing={playing}
               theme={theme}
               visualizerMode={visualizerMode}
+              fpsLimit={perfSettings?.fpsLimit}
+              canvasGlow={perfSettings?.canvasGlow}
+              lowEndMode={perfSettings?.lowEndMode}
+              simplifiedDisplayOnIdle={perfSettings?.simplifiedDisplayOnIdle}
             />
           </div>
           
@@ -591,7 +729,7 @@ export const MainDisplay: React.FC<Props> = ({
       </div>
 
       {/* JDM Automotive Backlit Preset Key Bank Below Display Glass */}
-      <div className="flex items-center justify-between gap-1 mt-1.5 px-1 py-0.5 bg-[#0b0b0b] rounded-[3px] border border-[#1a1a1a] shadow-inner h-[28px] min-h-[28px] max-h-[28px] w-full flex-shrink-0">
+      <div className="channel-presets-bank flex items-center justify-between gap-1 mt-1.5 px-1 py-0.5 bg-[#0b0b0b] rounded-[3px] border border-[#1a1a1a] shadow-inner h-[28px] min-h-[28px] max-h-[28px] w-full flex-shrink-0">
         {/* Speaker Fader & Visualizer Selector */}
         <div className="flex items-center gap-1 flex-shrink-0">
           <button 

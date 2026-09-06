@@ -33,7 +33,7 @@ export const Equalizer: React.FC<Props> = ({
   autoScanRadio
 }) => {
   return (
-    <div className="w-full h-[105px] min-h-[105px] max-h-[105px] px-2.5 pb-1.5 pt-1 border-t border-[#1a1a1a] bg-gradient-to-b from-[#121212] via-[#0e0e0e] to-[#080808] transition-all select-none flex-shrink-0 flex flex-col justify-between">
+    <div className="equalizer-deck-panel w-full h-[105px] min-h-[105px] max-h-[105px] px-2.5 pb-1.5 pt-1 border-t border-[#1a1a1a] bg-gradient-to-b from-[#121212] via-[#0e0e0e] to-[#080808] transition-all select-none flex-shrink-0 flex flex-col justify-between">
       {/* Top control bar with Illuminated LED Strip Border */}
       <div className="flex items-center justify-between mb-0.5 px-0.5 h-5 flex-shrink-0">
         {/* Left EQ Cluster with Solid Thin LED Border (No Outer Glow) */}

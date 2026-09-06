@@ -75,7 +75,7 @@ export const RightControls: React.FC<Props> = ({
   };
 
   return (
-    <div className="w-[145px] min-w-[145px] max-w-[145px] flex-shrink-0 flex flex-col justify-between h-full py-1 px-1.5 border-l border-[#080808] shadow-[-1px_0_0_#1a1a1a] bg-gradient-to-b from-[#141414] via-[#101010] to-[#0a0a0a] select-none">
+    <div className="right-controls-panel w-[145px] min-w-[145px] max-w-[145px] flex-shrink-0 flex flex-col justify-between h-full py-1 px-1.5 border-l border-[#080808] shadow-[-1px_0_0_#1a1a1a] bg-gradient-to-b from-[#141414] via-[#101010] to-[#0a0a0a] select-none">
       {/* Source Selection Buttons: TUNER, CD (with STREAM & Beeping LED), TAPE */}
       <div className="flex flex-col gap-1 w-full">
         <div className="grid grid-cols-3 gap-1">
@@ -105,26 +105,28 @@ export const RightControls: React.FC<Props> = ({
             style={{ '--boot-delay': '0.90s' } as React.CSSProperties}
             title={isYtPlaying ? "Streaming Active - Click to Change Stream / CD" : "CD Player & Web Stream - Click to Switch or Open Stream"}
           >
-            {/* Top row: CD label + LED indicator */}
-            <div className="flex items-center justify-center gap-1 w-full">
-              {/* CD LED indicator - beeps continuously in player colour when streaming from YouTube */}
-              <span 
-                className={`w-[4.5px] h-[4.5px] rounded-full border border-black/80 transition-all flex-shrink-0 ${
-                  powered 
-                    ? (isYtPlaying 
-                        ? 'animate-cd-beep' 
-                        : (mode === 'CD' ? 'opacity-100' : 'opacity-40'))
-                    : 'bg-[#1a1a1e] opacity-20'
-                }`}
-                style={{
-                  backgroundColor: powered ? 'var(--color-lcd-primary)' : '#1a1a1e',
-                  boxShadow: powered 
-                    ? (isYtPlaying 
-                        ? '0 0 6px var(--color-lcd-primary), 0 0 2px #fff' 
-                        : (mode === 'CD' ? '0 0 4px var(--color-lcd-primary)' : 'none'))
-                    : 'none'
-                }}
-              />
+            {/* Top row: CD label + LED indicator in recessed black hole */}
+            <div className="flex items-center justify-center gap-1.5 w-full">
+              {/* Recessed Black LED Hole */}
+              <div className="w-2 h-2 rounded-full bg-black border border-black shadow-[inset_0_1px_2px_#000] flex items-center justify-center flex-shrink-0">
+                <span 
+                  className={`w-[4.5px] h-[4.5px] rounded-full border border-black/80 transition-all flex-shrink-0 ${
+                    powered 
+                      ? (isYtPlaying 
+                          ? 'animate-cd-beep' 
+                          : (mode === 'CD' ? 'opacity-100' : 'opacity-40'))
+                      : 'bg-[#1a1a1e] opacity-20'
+                  }`}
+                  style={{
+                    backgroundColor: powered ? 'var(--color-lcd-primary)' : '#1a1a1e',
+                    boxShadow: powered 
+                      ? (isYtPlaying 
+                          ? '0 0 6px var(--color-lcd-primary), 0 0 2px #fff' 
+                          : (mode === 'CD' ? '0 0 4px var(--color-lcd-primary)' : 'none'))
+                      : 'none'
+                  }}
+                />
+              </div>
               <span className="leading-none tracking-wider font-bold">CD</span>
             </div>
 
@@ -162,7 +164,7 @@ export const RightControls: React.FC<Props> = ({
       </div>
 
       {/* Center: Circular Knurled BASS Dial (Bigger & Dark Metal) */}
-      <div className="my-0.5 py-0.5 border-y border-[#1c1c1c] flex flex-col items-center justify-center bg-[#090909]/60 rounded">
+      <div className="bass-dial-container my-0.5 py-0.5 border-y border-[#1c1c1c] flex flex-col items-center justify-center bg-[#090909]/60 rounded">
         <RotaryDial
           label="BASS"
           value={bass}
@@ -235,7 +237,7 @@ export const RightControls: React.FC<Props> = ({
       </div>
 
       {/* Ports: Realistic USB-A Socket & 3.5mm AUX Jack with Illuminated LED Borders */}
-      <div className="w-full bg-[#08080a] rounded-[4px] border border-[#1c1d22] p-1 mt-1 flex flex-col gap-0.5 items-center shadow-inner">
+      <div className="ports-enclosure w-full bg-[#08080a] rounded-[4px] border border-[#1c1d22] p-1 mt-1 flex flex-col gap-0.5 items-center shadow-inner">
         <div className="flex items-center justify-around w-full px-1">
           {/* USB-A Port with LED Border */}
           <div className="flex flex-col items-center">
@@ -255,7 +257,7 @@ export const RightControls: React.FC<Props> = ({
                   usbInputRef.current?.click();
                 }
               }}
-              className="group relative cursor-pointer flex flex-col items-center justify-center p-0.5 rounded-[2px] transition-all duration-300"
+              className="usb-port-housing group relative cursor-pointer flex flex-col items-center justify-center p-0.5 rounded-[2px] transition-all duration-300"
               style={{
                 border: '1px solid #1c1d22',
                 boxShadow: 'none',
@@ -264,11 +266,11 @@ export const RightControls: React.FC<Props> = ({
               title="USB Port - Click to Connect / Load USB Audio"
             >
               {/* Outer USB Beveled Metal Shield */}
-              <div className="w-[32px] h-[13px] bg-[#14161a] border border-[#2c3038] rounded-[1.5px] relative flex items-center justify-center shadow-inner overflow-hidden">
-                {/* Dark Inner Cavity */}
-                <div className="w-[28px] h-[9px] bg-[#050506] rounded-[1px] relative flex items-center shadow-[inset_0_2px_4px_rgba(0,0,0,1)]">
-                  {/* USB Plastic Tongue with 4 Gold Contacts */}
-                  <div className="w-[18px] h-[4px] bg-[#d5d7de] absolute top-0 left-[5px] rounded-b-[0.5px] border-b border-[#888] flex justify-around px-1 items-end pb-[0.5px]">
+              <div className="usb-shield-metal w-[32px] h-[13px] bg-[#14161a] border border-[#2c3038] rounded-[1.5px] relative flex items-center justify-center shadow-inner overflow-hidden">
+                {/* Pure Pitch Black Inner Cavity */}
+                <div className="usb-inner-cavity w-[28px] h-[9px] bg-black rounded-[1px] relative flex items-center shadow-[inset_0_2px_5px_#000000]">
+                  {/* USB Black Plastic Tongue with 4 Gold Contacts */}
+                  <div className="usb-tongue w-[18px] h-[4px] bg-[#0a0a0e] absolute top-0 left-[5px] rounded-b-[0.5px] border-b border-[#1c1d24] flex justify-around px-1 items-end pb-[0.5px] shadow-[inset_0_1px_1px_#000000]">
                     <span className="w-[1.5px] h-[1.5px] bg-[#d4af37]" />
                     <span className="w-[1.5px] h-[1.5px] bg-[#d4af37]" />
                     <span className="w-[1.5px] h-[1.5px] bg-[#d4af37]" />
@@ -300,7 +302,7 @@ export const RightControls: React.FC<Props> = ({
                   auxInputRef.current?.click();
                 }
               }}
-              className="group relative cursor-pointer flex items-center justify-center rounded-full p-[2px] transition-all duration-300"
+              className="aux-port-housing group relative cursor-pointer flex items-center justify-center rounded-full p-[2px] transition-all duration-300"
               style={{
                 border: '1px solid #1c1d22',
                 boxShadow: 'none',
@@ -309,11 +311,11 @@ export const RightControls: React.FC<Props> = ({
               title="3.5mm AUX IN Jack - Click to Plug In AUX Audio"
             >
               {/* Outer Milled Metal Collar */}
-              <div className="w-[17px] h-[17px] rounded-full bg-gradient-to-tr from-[#1b1c20] via-[#2d3038] to-[#121316] border border-[#383d47] flex items-center justify-center shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                {/* 3.5mm Aperture Bore Hole */}
-                <div className="w-[7px] h-[7px] rounded-full bg-[#020202] border border-[#0a0a0e] shadow-[inset_0_2px_4px_rgba(0,0,0,1)] relative flex items-center justify-center">
-                  {/* Brass contact leaf */}
-                  <div className="w-[2px] h-[2.5px] bg-[#c29b38] rounded-full opacity-70" />
+              <div className="aux-collar-metal w-[17px] h-[17px] rounded-full bg-gradient-to-tr from-[#1b1c20] via-[#2d3038] to-[#121316] border border-[#383d47] flex items-center justify-center shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                {/* Pure Pitch Black 3.5mm Aperture Bore Hole */}
+                <div className="aux-inner-bore w-[8px] h-[8px] rounded-full bg-black border border-black shadow-[inset_0_3px_5px_#000000] relative flex items-center justify-center">
+                  {/* Brass contact leaf in dark socket */}
+                  <div className="w-[2px] h-[2.5px] bg-[#9a7828] rounded-full opacity-50" />
                 </div>
               </div>
             </div>

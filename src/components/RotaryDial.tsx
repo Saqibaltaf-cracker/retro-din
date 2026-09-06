@@ -114,7 +114,7 @@ export const RotaryDial: React.FC<Props> = ({
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onWheel={handleWheel}
-        className={`relative flex items-center justify-center cursor-grab active:cursor-grabbing rounded-full touch-none group ${
+        className={`rotary-dial-housing relative flex items-center justify-center cursor-grab active:cursor-grabbing rounded-full touch-none group ${
           isBooting ? 'booting-dial' : ''
         }`}
         style={{
@@ -160,9 +160,9 @@ export const RotaryDial: React.FC<Props> = ({
           );
         })}
 
-        {/* Machined Brushed Dark Metal Dial Body */}
+        {/* Machined Brushed Metal Dial Body */}
         <div 
-          className="relative rounded-full flex items-center justify-center pointer-events-none transition-transform duration-75"
+          className="rotary-dial-knob relative rounded-full flex items-center justify-center pointer-events-none transition-transform duration-75"
           style={{
             width: `${size - 18}px`,
             height: `${size - 18}px`,
@@ -192,7 +192,7 @@ export const RotaryDial: React.FC<Props> = ({
         >
           {/* Milled Outer Knurling Chamfer */}
           <div 
-            className="absolute inset-[1.5px] rounded-full"
+            className="rotary-dial-knurl absolute inset-[1.5px] rounded-full"
             style={{
               background: 'repeating-conic-gradient(from 0deg, #2b2f38 0deg 2.5deg, #0e1013 2.5deg 5deg)',
               opacity: 0.45,
@@ -200,9 +200,9 @@ export const RotaryDial: React.FC<Props> = ({
             }}
           />
 
-          {/* Precision Machined Brushed Dark Metal Face */}
+          {/* Precision Machined Brushed Metal Face */}
           <div 
-            className="absolute inset-[3.5px] rounded-full"
+            className="rotary-dial-face absolute inset-[3.5px] rounded-full"
             style={{
               background: `
                 repeating-radial-gradient(circle at center, transparent 0, transparent 1.5px, rgba(0,0,0,0.12) 1.8px, transparent 2.5px),
@@ -241,9 +241,9 @@ export const RotaryDial: React.FC<Props> = ({
             }}
           />
 
-          {/* Center Spun Dark Metal Cap */}
+          {/* Center Spun Metal Cap */}
           <div 
-            className="absolute rounded-full"
+            className="rotary-center-cap absolute rounded-full"
             style={{
               width: `${Math.round(size * 0.22)}px`,
               height: `${Math.round(size * 0.22)}px`,

@@ -12,6 +12,10 @@ interface Props {
   playing?: boolean;
   theme?: string;
   visualizerMode?: VisualizerMode;
+  fpsLimit?: 60 | 30 | 20;
+  canvasGlow?: boolean;
+  lowEndMode?: boolean;
+  simplifiedDisplayOnIdle?: boolean;
 }
 
 export const SpectrumAnalyzer: React.FC<Props> = ({ 
@@ -22,7 +26,11 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
   isYtPlaying = false, 
   playing = false, 
   theme,
-  visualizerMode = 'FIRE_SPECTRUM'
+  visualizerMode = 'FIRE_SPECTRUM',
+  fpsLimit = 60,
+  canvasGlow = true,
+  lowEndMode = false,
+  simplifiedDisplayOnIdle = true
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bootStartTimeRef = useRef<number>(0);
@@ -56,6 +64,33 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
       offscreenCanvasRef.current = null;
     };
   }, []);
+
+  // Performance optimization: only play videos when actively required by the current mode
+  useEffect(() => {
+    const needsBoot = isBooting;
+    const needsDrift = visualizerMode === 'JDM_CAR_DOTS' || visualizerMode === 'JDM_CAR_OLED';
+    const needsTandem = visualizerMode === 'JDM_TANDEM_DOTS';
+    const needsSerene = visualizerMode === 'SERENE_JAPAN';
+
+    const manageVideo = (ref: React.RefObject<HTMLVideoElement | null>, shouldPlay: boolean) => {
+      const v = ref.current;
+      if (!v) return;
+      if (shouldPlay && powered) {
+        if (v.paused) {
+          v.play().catch(() => {});
+        }
+      } else {
+        if (!v.paused) {
+          v.pause();
+        }
+      }
+    };
+
+    manageVideo(bootVideoRef, needsBoot);
+    manageVideo(driftVideoRef, needsDrift);
+    manageVideo(tandemVideoRef, needsTandem);
+    manageVideo(sereneVideoRef, needsSerene);
+  }, [isBooting, visualizerMode, powered]);
 
   useEffect(() => {
     if (isBooting && !prevBootingRef.current) {
@@ -101,6 +136,9 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
       return `rgba(74, 240, 74, ${alpha})`;
     };
 
+    const allowGlow = canvasGlow && !lowEndMode;
+    const isLowEndVideo = lowEndMode;
+
     const renderDotMatrixFromVideo = (
       v: HTMLVideoElement | null,
       ctx: CanvasRenderingContext2D,
@@ -113,8 +151,8 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
       ctx.fillStyle = '#010204';
       ctx.fillRect(0, 0, width, height);
 
-      const cols = 64;
-      const rows = 32;
+      const cols = isLowEndVideo ? 32 : 64;
+      const rows = isLowEndVideo ? 16 : 32;
       const startX = 4;
       const startY = 4;
       const gridW = width - 8;
@@ -143,9 +181,11 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
                   const dotRadius = Math.max(0.6, Math.min(1.8, intensity * 1.7));
                   const dotAlpha = Math.min(1, intensity * 1.25) * effectiveDimmer;
                   ctx.fillStyle = hexToRgba(colors.primary, dotAlpha);
-                  if (intensity > 0.68) {
+                  if (intensity > 0.68 && allowGlow) {
                     ctx.shadowColor = colors.primary;
                     ctx.shadowBlur = 3 * effectiveDimmer;
+                  } else {
+                    ctx.shadowBlur = 0;
                   }
                   ctx.beginPath();
                   ctx.arc(px, py, dotRadius, 0, Math.PI * 2);
@@ -186,31 +226,55 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
 
     let colors = getThemeColors();
     let frameCounter = 0;
+    let lastDrawTime = 0;
+    const targetFps = fpsLimit !== undefined ? fpsLimit : (lowEndMode ? 30 : 60);
+    // If targetFps <= 0: uncapped native monitor refresh rate (e.g. 144Hz, 240Hz, 360Hz)
+    const frameInterval = targetFps > 0 ? 1000 / targetFps : 0;
 
     const draw = () => {
       animationId = requestAnimationFrame(draw);
+      const now = performance.now();
+
+      if (frameInterval > 0) {
+        const elapsed = now - lastDrawTime;
+        if (elapsed < frameInterval - 1.5) {
+          return;
+        }
+        lastDrawTime = now - (elapsed % frameInterval);
+      }
+
       frameCounter++;
-      
       if (frameCounter % 30 === 0) {
         colors = getThemeColors();
       }
 
       const width = canvas.width;
       const height = canvas.height;
-      ctx.clearRect(0, 0, width, height);
 
       // When powered off: render authentic dense field of small dots instead of big cubes
       if (!powered) {
+        // If simplified display on idle is on, throttle powered-off redraws to save CPU
+        if (frameCounter > 2 && simplifiedDisplayOnIdle && (frameCounter % 10 !== 0)) {
+          return;
+        }
+        ctx.clearRect(0, 0, width, height);
         drawPoweredOffDisplay(ctx, width, height, colors, theme);
         return;
       }
+
+      // Idle throttling when not playing and not booting
+      const isAudioActive = playing || isYtPlaying || isBooting;
+      if (!isAudioActive && simplifiedDisplayOnIdle && (frameCounter % 3 !== 0)) {
+        return; // Conserves battery when paused
+      }
+
+      ctx.clearRect(0, 0, width, height);
 
       const bandWidth = (width / numBands) - 1.5;
       const segmentHeight = (height / segmentsPerBand) - 1;
 
       let dataArray = new Uint8Array(numBands);
       let rawWaveData = new Uint8Array(128);
-      const now = performance.now();
 
       if (powered && !isBooting) {
         let isRealAudio = false;
@@ -1217,8 +1281,8 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
           } else {
             // Standard Classic BARS
             ctx.fillStyle = (isLit || isPeak) ? colorOn : colorOff;
-            ctx.shadowBlur = (isLit || isPeak) ? (isPeak ? 6 : (isRgb ? 4 : 3)) : 0;
-            ctx.shadowColor = (isLit || isPeak) ? colorOn : 'transparent';
+            ctx.shadowBlur = (isLit || isPeak && allowGlow) ? (isPeak ? 6 : (isRgb ? 4 : 3)) : 0;
+            ctx.shadowColor = (isLit || isPeak && allowGlow) ? colorOn : 'transparent';
             ctx.fillRect(x, y, bandWidth, segmentHeight);
           }
         }
@@ -1227,51 +1291,47 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
 
     draw();
     return () => cancelAnimationFrame(animationId);
-  }, [engine, powered, dimmerLevel, isBooting, isYtPlaying, playing, theme, visualizerMode]);
+  }, [engine, powered, dimmerLevel, isBooting, isYtPlaying, playing, theme, visualizerMode, fpsLimit, canvasGlow, lowEndMode, simplifiedDisplayOnIdle]);
 
   return (
     <>
       <video
         ref={driftVideoRef}
         src="/jdm_drift_original.mp4"
-        autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         className="hidden"
         style={{ display: 'none' }}
       />
       <video
         ref={tandemVideoRef}
         src="/jdm_tandem_clip.mp4"
-        autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         className="hidden"
         style={{ display: 'none' }}
       />
       <video
         ref={sereneVideoRef}
         src="/serene_japan.mp4"
-        autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         className="hidden"
         style={{ display: 'none' }}
       />
       <video
         ref={bootVideoRef}
         src="/cherry_blossom.mp4"
-        autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         className="hidden"
         style={{ display: 'none' }}
       />

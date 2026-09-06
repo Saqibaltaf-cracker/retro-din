@@ -215,6 +215,17 @@
   --color-lcd-danger-off: #332d00;
 }
 
+:root[data-theme="vintage-silver"] {
+  --color-lcd-primary: #e6ebf5;
+  --color-lcd-primary-rgb: 230, 235, 245;
+  --color-lcd-primary-off: #1b1e26;
+  --color-lcd-secondary: #9aa2b4;
+  --color-lcd-secondary-rgb: 154, 162, 180;
+  --color-lcd-secondary-off: #13151b;
+  --color-lcd-danger: #ff4a5a;
+  --color-lcd-danger-off: #2e0d11;
+}
+
 html {
   width: 100%;
   min-height: 100%;
@@ -281,6 +292,39 @@ body.is-isolated #root {
 
 .animate-cd-beep {
   animation: cd-led-beep 0.55s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Cassette LED Whitish Bright Neon Red Beeping / Pulsing */
+@keyframes cassette-neon-beep {
+  0%, 100% {
+    opacity: 1;
+    background-color: #ffffff;
+    box-shadow: 0 0 4px #ffffff, 0 0 8px #ff2233, 0 0 15px #ff0022, 0 0 22px #ff0033;
+    transform: scale(1.15);
+  }
+  40% {
+    opacity: 1;
+    background-color: #ffffff;
+    box-shadow: 0 0 3px #ffffff, 0 0 7px #ff2233, 0 0 13px #ff0022;
+    transform: scale(1.1);
+  }
+  50%, 85% {
+    opacity: 0.18;
+    background-color: #55050a;
+    box-shadow: 0 0 2px #220003;
+    transform: scale(0.9);
+  }
+}
+
+.animate-cassette-beep {
+  animation: cassette-neon-beep 0.65s cubic-bezier(0.35, 0, 0.65, 1) infinite;
+}
+
+.cassette-neon-solid {
+  opacity: 1;
+  background-color: #ffffff;
+  box-shadow: 0 0 3px #ffffff, 0 0 8px #ff2233, 0 0 15px #ff0022, 0 0 22px #ff0033;
+  transform: scale(1.05);
 }
 
 /* Realistic Plastic Chassis */
@@ -839,3 +883,653 @@ html[data-backlit-level="3"] .rotary-notch {
   animation: marquee-scroll 12s linear infinite;
   will-change: transform;
 }
+
+/* Mobile touch and interaction enhancements */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, input, select {
+  touch-action: manipulation;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* ==========================================================================
+   VINTAGE SILVER ALUMINUM HI-FI EDITION (1980s Japanese Audiophile Finish)
+   ========================================================================== */
+
+html[data-chassis="silver"] .outer-mount-frame {
+  background: linear-gradient(145deg, #242730 0%, #17181f 50%, #111216 100%) !important;
+  border-color: #4a505e !important;
+  box-shadow: 
+    inset 0 2px 8px rgba(255, 255, 255, 0.12),
+    0 12px 35px rgba(0, 0, 0, 0.85),
+    0 0 25px rgba(190, 200, 218, 0.08) !important;
+}
+
+/* Master Chassis: Authentic Audiophile Fine Brushed Aluminum */
+html[data-chassis="silver"] .stereo-chassis {
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.22) 0px,
+      rgba(255, 255, 255, 0.22) 0.5px,
+      rgba(0, 0, 0, 0.04) 0.5px,
+      rgba(0, 0, 0, 0.04) 1px,
+      rgba(255, 255, 255, 0.12) 1px,
+      rgba(255, 255, 255, 0.12) 1.5px,
+      rgba(0, 0, 0, 0.03) 1.5px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(255, 255, 255, 0.18) 2px,
+      rgba(255, 255, 255, 0.18) 2.5px,
+      rgba(0, 0, 0, 0.05) 2.5px,
+      rgba(0, 0, 0, 0.05) 3px
+    ),
+    linear-gradient(
+      180deg,
+      #fafbfe 0%,
+      #ebeef5 4%,
+      #d9dde6 20%,
+      #c8cdd7 50%,
+      #b8bdc8 80%,
+      #c8cdd7 94%,
+      #dee2ea 100%
+    ) !important;
+  border-color: #828794 !important;
+  box-shadow: 
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.35),
+    0 20px 50px rgba(0, 0, 0, 0.7),
+    0 0 50px rgba(210, 218, 230, 0.25) !important;
+}
+
+/* Left & Right Wing Faceplates in Fine Brushed Silver */
+html[data-chassis="silver"] .left-controls-panel {
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.22) 0px,
+      rgba(255, 255, 255, 0.22) 0.5px,
+      rgba(0, 0, 0, 0.04) 0.5px,
+      rgba(0, 0, 0, 0.04) 1px,
+      rgba(255, 255, 255, 0.12) 1px,
+      rgba(255, 255, 255, 0.12) 1.5px,
+      rgba(0, 0, 0, 0.03) 1.5px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(255, 255, 255, 0.18) 2px,
+      rgba(255, 255, 255, 0.18) 2.5px,
+      rgba(0, 0, 0, 0.05) 2.5px,
+      rgba(0, 0, 0, 0.05) 3px
+    ),
+    linear-gradient(180deg, #f8fafc 0%, #e2e6ee 25%, #c8ccd6 60%, #b8bcc6 85%, #c8cbd5 100%) !important;
+  border-right-color: #888d98 !important;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+html[data-chassis="silver"] .right-controls-panel {
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.22) 0px,
+      rgba(255, 255, 255, 0.22) 0.5px,
+      rgba(0, 0, 0, 0.04) 0.5px,
+      rgba(0, 0, 0, 0.04) 1px,
+      rgba(255, 255, 255, 0.12) 1px,
+      rgba(255, 255, 255, 0.12) 1.5px,
+      rgba(0, 0, 0, 0.03) 1.5px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(255, 255, 255, 0.18) 2px,
+      rgba(255, 255, 255, 0.18) 2.5px,
+      rgba(0, 0, 0, 0.05) 2.5px,
+      rgba(0, 0, 0, 0.05) 3px
+    ),
+    linear-gradient(180deg, #f8fafc 0%, #e2e6ee 25%, #c8ccd6 60%, #b8bcc6 85%, #c8cbd5 100%) !important;
+  border-left-color: #888d98 !important;
+  box-shadow: -1px 0 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Center Console & Visualizer Background Body: Solid Fine Brushed Silver */
+html[data-chassis="silver"] .center-console-panel {
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.22) 0px,
+      rgba(255, 255, 255, 0.22) 0.5px,
+      rgba(0, 0, 0, 0.04) 0.5px,
+      rgba(0, 0, 0, 0.04) 1px,
+      rgba(255, 255, 255, 0.12) 1px,
+      rgba(255, 255, 255, 0.12) 1.5px,
+      rgba(0, 0, 0, 0.03) 1.5px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(255, 255, 255, 0.18) 2px,
+      rgba(255, 255, 255, 0.18) 2.5px,
+      rgba(0, 0, 0, 0.05) 2.5px,
+      rgba(0, 0, 0, 0.05) 3px
+    ),
+    linear-gradient(180deg, #fafbfe 0%, #e5e8ef 20%, #cfd4de 60%, #bfc4d0 88%, #cdd2dc 100%) !important;
+  border-left: 1.5px solid #888d98 !important;
+  border-right: 1.5px solid #888d98 !important;
+  box-shadow: 
+    inset 1px 0 0 rgba(255, 255, 255, 0.8),
+    inset -1px 0 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+html[data-chassis="silver"] .main-display-panel {
+  background: transparent !important;
+}
+
+/* ONLY Visualizer & Tuner Display Window remains Pitch Black */
+html[data-chassis="silver"] .lcd-glass {
+  background: #000000 !important;
+  border: 2px solid #22252c !important;
+  box-shadow: 
+    inset 0 3px 10px rgba(0, 0, 0, 1),
+    0 1px 1.5px rgba(255, 255, 255, 0.6),
+    0 3px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Channel & Visualizer Preset Button Bar Background Body in Silver */
+html[data-chassis="silver"] .channel-presets-bank {
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.2) 0px,
+      rgba(255, 255, 255, 0.2) 0.5px,
+      rgba(0, 0, 0, 0.04) 0.5px,
+      rgba(0, 0, 0, 0.04) 1px,
+      rgba(255, 255, 255, 0.12) 1px,
+      rgba(255, 255, 255, 0.12) 1.5px,
+      rgba(0, 0, 0, 0.03) 1.5px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(255, 255, 255, 0.16) 2px,
+      rgba(255, 255, 255, 0.16) 2.5px,
+      rgba(0, 0, 0, 0.05) 2.5px,
+      rgba(0, 0, 0, 0.05) 3px
+    ),
+    linear-gradient(180deg, #dce0e9 0%, #c8ccd6 50%, #b4b8c3 100%) !important;
+  border: 1px solid #787e8c !important;
+  border-top-color: #ffffff !important;
+  box-shadow: inset 0 1px 1.5px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Equalizer Lower Deck in Brushed Silver */
+html[data-chassis="silver"] .equalizer-deck-panel {
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.2) 0px,
+      rgba(255, 255, 255, 0.2) 0.5px,
+      rgba(0, 0, 0, 0.04) 0.5px,
+      rgba(0, 0, 0, 0.04) 1px,
+      rgba(255, 255, 255, 0.12) 1px,
+      rgba(255, 255, 255, 0.12) 1.5px,
+      rgba(0, 0, 0, 0.03) 1.5px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(255, 255, 255, 0.16) 2px,
+      rgba(255, 255, 255, 0.16) 2.5px,
+      rgba(0, 0, 0, 0.05) 2.5px,
+      rgba(0, 0, 0, 0.05) 3px
+    ),
+    linear-gradient(180deg, #d2d6df 0%, #c0c4ce 35%, #b0b5c0 75%, #a4a9b4 100%) !important;
+  border-top: 1.5px solid #787d8a !important;
+  box-shadow: inset 0 1.5px 2px rgba(255, 255, 255, 0.8), 0 -1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* KEEP CD Port Black with subtle silver bevel */
+html[data-chassis="silver"] .cd-inlet-housing {
+  background: linear-gradient(180deg, #18191c 0%, #08090b 50%, #040405 100%) !important;
+  border: 1px solid #20232b !important;
+  border-top-color: #353a45 !important;
+  border-bottom-color: #050608 !important;
+  box-shadow: 
+    inset 0 3px 6px rgba(0, 0, 0, 0.98),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.1),
+    0 1px 1.5px rgba(255, 255, 255, 0.4) !important;
+}
+
+html[data-chassis="silver"] .cd-inlet-housing .text-zinc-500 {
+  color: #727885 !important;
+}
+
+/* Realistic USB-A & 3.5mm AUX Ports in Silver Brushed Metal */
+html[data-chassis="silver"] .ports-enclosure {
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.16) 0px,
+      rgba(255, 255, 255, 0.05) 1px,
+      rgba(0, 0, 0, 0.04) 2px,
+      rgba(255, 255, 255, 0.12) 3px,
+      rgba(0, 0, 0, 0.06) 4px,
+      rgba(255, 255, 255, 0.07) 5px
+    ),
+    linear-gradient(180deg, #e4e7ee 0%, #cbcfd8 60%, #b8bcc7 100%) !important;
+  border: 1px solid #7c8290 !important;
+  border-top-color: #ffffff !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+html[data-chassis="silver"] .usb-port-housing,
+html[data-chassis="silver"] .aux-port-housing {
+  background: #bcc0cb !important;
+  border: 1px solid #828796 !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+html[data-chassis="silver"] .usb-shield-metal {
+  background: linear-gradient(180deg, #f0f2f7 0%, #d8dbe4 50%, #bcc0cb 100%) !important;
+  border-color: #6a707e !important;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-chassis="silver"] .aux-collar-metal {
+  background: radial-gradient(circle at center, #f2f4f8 0%, #c4c8d4 60%, #9aa0ad 100%) !important;
+  border-color: #6e7482 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* USB and AUX inner sockets: always pitch black inside across all chassis finishes */
+.usb-inner-cavity,
+html[data-chassis="silver"] .usb-inner-cavity,
+.aux-inner-bore,
+html[data-chassis="silver"] .aux-inner-bore {
+  background-color: #000000 !important;
+  box-shadow: inset 0 2px 6px #000000 !important;
+}
+
+.usb-tongue,
+html[data-chassis="silver"] .usb-tongue {
+  background-color: #0a0a0e !important;
+  border-bottom: 1px solid #1c1d24 !important;
+}
+
+/* ROTATE DEVICE ANIMATION FOR MOBILE PORTRAIT */
+@keyframes rotate-phone-flow {
+  0%, 15% {
+    transform: rotate(0deg);
+  }
+  45%, 65% {
+    transform: rotate(90deg);
+  }
+  85%, 100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-rotate-device {
+  animation: rotate-phone-flow 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* VOLUME KNOBS BG: SILVER GLOSSY GLASS WITH SPECULAR REFLECTIONS */
+html[data-chassis="silver"] .volume-dial-container,
+html[data-chassis="silver"] .bass-dial-container {
+  background: linear-gradient(145deg, rgba(253, 254, 255, 0.96) 0%, rgba(228, 233, 242, 0.95) 35%, rgba(206, 212, 224, 0.95) 70%, rgba(222, 226, 236, 0.95) 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+  border-top: 1.5px solid #ffffff !important;
+  border-bottom: 1.5px solid #8e95a4 !important;
+  border-radius: 5px !important;
+  box-shadow: 
+    inset 0 1.5px 3px rgba(255, 255, 255, 1),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.12),
+    0 3px 10px rgba(0, 0, 0, 0.22),
+    0 0 1px rgba(255, 255, 255, 0.9) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+html[data-chassis="silver"] .volume-dial-container::before,
+html[data-chassis="silver"] .bass-dial-container::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 48% !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.22) 65%, transparent 100%) !important;
+  pointer-events: none !important;
+  border-radius: 4px 4px 0 0 !important;
+  z-index: 1 !important;
+}
+
+/* Dial housing ring inside silver glossy glass */
+html[data-chassis="silver"] .rotary-dial-housing {
+  background: radial-gradient(circle at center, #eceef5 0%, #d5d9e5 60%, #b8becb 100%) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.22), 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* FULL SOLID METAL ROTARY DIAL: UNIFORM ONE-COLOUR MACHINED SILVER */
+html[data-chassis="silver"] .rotary-dial-knob {
+  background: 
+    repeating-radial-gradient(circle at center, transparent 0, transparent 1.2px, rgba(255, 255, 255, 0.15) 1.6px, transparent 2.2px),
+    linear-gradient(135deg, #e6e9f1 0%, #d4d7df 35%, #c2c6d0 70%, #d8dbe4 100%) !important;
+  border: 1.5px solid #8e94a2 !important;
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.45),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-chassis="silver"] .rotary-dial-knurl {
+  background: repeating-conic-gradient(from 0deg, #8c92a0 0deg 2.5deg, #d8dbe4 2.5deg 5deg) !important;
+  opacity: 0.65 !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-chassis="silver"] .rotary-dial-face {
+  background: 
+    repeating-radial-gradient(circle at center, transparent 0, transparent 1.5px, rgba(255, 255, 255, 0.12) 1.8px, transparent 2.5px),
+    linear-gradient(135deg, #e6e9f1 0%, #d4d7df 35%, #c2c6d0 70%, #d8dbe4 100%) !important;
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.85),
+    0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+html[data-chassis="silver"] .rotary-center-cap {
+  background: linear-gradient(135deg, #edf0f6 0%, #d5d8e2 50%, #c4c8d2 100%) !important;
+  border: 1px solid #9aa0ae !important;
+  box-shadow: 
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.9),
+    0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Visualizer Display Right Side Bezel Frame */
+.visualizer-bezel-frame {
+  border-right: 2px solid #282c36 !important;
+  box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.8), 1px 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-chassis="silver"] .visualizer-bezel-frame {
+  border-right: 2.5px solid #5a6070 !important;
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.9), 1px 0 2px rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Brushed Solid Aluminum Push Buttons */
+html[data-chassis="silver"] .btn-backlit {
+  background: linear-gradient(180deg, #f8f9fb 0%, #e2e5ec 35%, #c8ccd6 70%, #b4b8c4 100%) !important;
+  border-top-color: #ffffff !important;
+  border-left-color: #d8dbe2 !important;
+  border-right-color: #8c919c !important;
+  border-bottom-color: #6a6f7a !important;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.22),
+    inset 0 1.2px 1.5px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.15) !important;
+}
+
+html[data-chassis="silver"] .btn-backlit::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+}
+
+html[data-chassis="silver"] .btn-backlit.active,
+html[data-chassis="silver"] .btn-backlit:active {
+  background: linear-gradient(180deg, #a4a9b6 0%, #b8bcc8 50%, #cbcfd8 100%) !important;
+  border-top-color: #7a7e8a !important;
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-chassis="silver"] .btn-hard {
+  background: linear-gradient(180deg, #ffffff 0%, #e6e9f0 30%, #ccd1db 60%, #b0b5c0 100%) !important;
+  border-top-color: #ffffff !important;
+  border-left-color: #d4d8e2 !important;
+  border-right-color: #888d98 !important;
+  border-bottom-color: #646872 !important;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.22),
+    inset 0 1.2px 1.5px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.18) !important;
+}
+
+html[data-chassis="silver"] .btn-hard:active,
+html[data-chassis="silver"] .btn-hard.active {
+  background: linear-gradient(180deg, #a2a6b2 0%, #b6bac6 50%, #cbcfdc 100%) !important;
+  box-shadow: inset 0 1.5px 3px rgba(0, 0, 0, 0.38) !important;
+}
+
+/* Equalizer Rockers & Cluster in Silver */
+html[data-chassis="silver"] .eq-cluster-border {
+  background-color: #a4a9b6 !important;
+  border-color: #727784 !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+html[data-chassis="silver"] .rocker-container.backlit-rocker {
+  background: #a8adb8 !important;
+  border-color: #606470 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+html[data-chassis="silver"] .rocker-half.backlit-half {
+  background: linear-gradient(180deg, #f8f9fb 0%, #e0e3ea 40%, #c4c8d2 100%) !important;
+}
+
+html[data-chassis="silver"] .rocker-half.backlit-half:active {
+  background: linear-gradient(180deg, #9ca0ac 0%, #b4b8c4 50%, #c8ccd6 100%) !important;
+}
+
+/* ==========================================================================
+   TEXTS & SYMBOLS IN SILVER MODE:
+   1. Remove text shadows on silver finish completely (no dark blur)
+   2. Except buttons & symbol text, other branding & Japanese text is dark grey
+   3. Keep Panasonic logo as is with vibrant illuminated neon glow
+   4. Add extra glow in silver mode for all lit buttons, symbols, and LCD text
+   ========================================================================== */
+
+/* Zero text shadow anywhere on silver finish */
+html[data-chassis="silver"] .btn-backlit,
+html[data-chassis="silver"] .btn-hard,
+html[data-chassis="silver"] .rocker-half,
+html[data-chassis="silver"] .brand-model-badge,
+html[data-chassis="silver"] .brand-subtext,
+html[data-chassis="silver"] .branding-text,
+html[data-chassis="silver"] .branding-deck-badges,
+html[data-chassis="silver"] .rotary-dial-housing span,
+html[data-chassis="silver"] .volume-dial-container span,
+html[data-chassis="silver"] .bass-dial-container span,
+html[data-chassis="silver"] .left-controls-panel span,
+html[data-chassis="silver"] .right-controls-panel span,
+html[data-chassis="silver"] .equalizer-deck-panel span,
+html[data-chassis="silver"] .channel-presets-bank span {
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+/* Branding and Japanese texts in dark grey (#363a45) */
+html[data-chassis="silver"] .branding-text,
+html[data-chassis="silver"] .branding-text span,
+html[data-chassis="silver"] .branding-deck-badges,
+html[data-chassis="silver"] .branding-deck-badges span,
+html[data-chassis="silver"] .brand-model-badge,
+html[data-chassis="silver"] .brand-model-badge span:not(.rainbow-gradient-text),
+html[data-chassis="silver"] .brand-subtext,
+html[data-chassis="silver"] .brand-subtext span {
+  color: #363a45 !important;
+  text-shadow: none !important;
+  filter: none !important;
+  border-color: #555b6a !important;
+}
+
+/* High contrast laser-etched black typography on brushed silver for unlit buttons */
+html[data-chassis="silver"] .btn-backlit:not(.lit),
+html[data-chassis="silver"] .btn-hard:not(.lit),
+html[data-chassis="silver"] .rocker-half:not(.lit) {
+  color: #121419 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+html[data-chassis="silver"] .left-controls-panel .text-zinc-400,
+html[data-chassis="silver"] .left-controls-panel .text-zinc-500,
+html[data-chassis="silver"] .left-controls-panel .text-zinc-600,
+html[data-chassis="silver"] .right-controls-panel .text-zinc-400,
+html[data-chassis="silver"] .right-controls-panel .text-zinc-500,
+html[data-chassis="silver"] .right-controls-panel .text-zinc-600,
+html[data-chassis="silver"] .center-console-panel .text-zinc-400,
+html[data-chassis="silver"] .center-console-panel .text-zinc-500,
+html[data-chassis="silver"] .center-console-panel .text-zinc-600,
+html[data-chassis="silver"] .equalizer-deck-panel .text-zinc-400,
+html[data-chassis="silver"] .equalizer-deck-panel .text-zinc-500,
+html[data-chassis="silver"] .equalizer-deck-panel .text-zinc-600,
+html[data-chassis="silver"] .channel-presets-bank .text-zinc-400,
+html[data-chassis="silver"] .channel-presets-bank .text-zinc-500,
+html[data-chassis="silver"] .channel-presets-bank .text-zinc-600 {
+  color: #363a45 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+/* ==========================================================================
+   SILVER MODE ILLUMINATION LOGIC:
+   1. By default in Silver mode, all button and dial backlights are turned OFF.
+   2. Buttons & symbols render with crisp laser-etched dark typography.
+   3. PANASONIC LOGO remains illuminated by default with vibrant neon backlight.
+   4. Display screen brightness is maintained at max.
+   ========================================================================== */
+
+/* PANASONIC LOGO: ALWAYS illuminated with vibrant neon backlight in Silver mode */
+html[data-chassis="silver"] .brand-logo-led,
+html[data-chassis="silver"][data-backlit-level="0"] .brand-logo-led,
+html[data-chassis="silver"][data-backlit-level="1"] .brand-logo-led,
+html[data-chassis="silver"][data-backlit-level="2"] .brand-logo-led,
+html[data-chassis="silver"][data-backlit-level="3"] .brand-logo-led {
+  color: var(--color-lcd-primary) !important;
+  opacity: 1.0 !important;
+  text-shadow: 
+    0 0 3px #ffffff,
+    0 0 8px var(--color-lcd-primary),
+    0 0 16px var(--color-lcd-primary),
+    0 0 28px rgba(var(--color-lcd-primary-rgb), 0.95) !important;
+  filter: 
+    drop-shadow(0 0 3px #ffffff) 
+    drop-shadow(0 0 8px var(--color-lcd-primary)) 
+    drop-shadow(0 0 18px rgba(var(--color-lcd-primary-rgb), 0.95)) !important;
+}
+
+/* By default (Backlight Level 0) in Silver mode: Turn off all backlights except Panasonic logo */
+html[data-chassis="silver"][data-backlit-level="0"] .btn-backlit,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-hard,
+html[data-chassis="silver"][data-backlit-level="0"] .rocker-half,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-backlit.lit,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-backlit.active,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-hard.lit,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-hard.active,
+html[data-chassis="silver"][data-backlit-level="0"] .rocker-half.lit {
+  color: #121419 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  filter: none !important;
+  animation: none !important;
+}
+
+html[data-chassis="silver"][data-backlit-level="0"] .btn-backlit svg,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-hard svg,
+html[data-chassis="silver"][data-backlit-level="0"] .rocker-half svg,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-backlit.lit svg,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-backlit.active svg,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-hard.lit svg,
+html[data-chassis="silver"][data-backlit-level="0"] .btn-hard.active svg,
+html[data-chassis="silver"][data-backlit-level="0"] .rocker-half.lit svg {
+  color: #121419 !important;
+  filter: none !important;
+}
+
+html[data-chassis="silver"][data-backlit-level="0"] .eq-band-label.lit {
+  color: #555b68 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+html[data-chassis="silver"][data-backlit-level="0"] .rotary-led-active,
+html[data-chassis="silver"][data-backlit-level="0"] .rotary-notch {
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: 0.25 !important;
+}
+
+/* When backlight is manually raised to 1, 2, or 3 in Silver mode */
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .btn-backlit.lit,
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .btn-backlit.active,
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .btn-hard.lit,
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .btn-hard.active,
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .rocker-half.lit {
+  color: var(--color-lcd-primary) !important;
+  text-shadow: 
+    0 0 3px #ffffff,
+    0 0 8px var(--color-lcd-primary),
+    0 0 16px var(--color-lcd-primary),
+    0 0 28px rgba(var(--color-lcd-primary-rgb), 0.95) !important;
+  animation: none !important;
+}
+
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .btn-backlit.lit svg,
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .btn-backlit.active svg,
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .btn-hard.lit svg,
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .btn-hard.active svg,
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .rocker-half.lit svg {
+  filter: 
+    drop-shadow(0 0 3px #ffffff) 
+    drop-shadow(0 0 7px var(--color-lcd-primary)) 
+    drop-shadow(0 0 16px rgba(var(--color-lcd-primary-rgb), 0.95)) !important;
+}
+
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .eq-band-label.lit {
+  color: var(--color-lcd-primary) !important;
+  text-shadow: 
+    0 0 3px #ffffff,
+    0 0 8px var(--color-lcd-primary),
+    0 0 16px rgba(var(--color-lcd-primary-rgb), 0.95) !important;
+}
+
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .rotary-led-active {
+  box-shadow: 
+    0 0 4px #ffffff,
+    0 0 8px var(--color-lcd-primary),
+    0 0 16px rgba(var(--color-lcd-primary-rgb), 0.95) !important;
+}
+
+html[data-chassis="silver"]:not([data-backlit-level="0"]) .rotary-notch {
+  box-shadow: 
+    0 0 3px #ffffff,
+    0 0 8px var(--color-lcd-primary),
+    0 0 16px rgba(var(--color-lcd-primary-rgb), 0.95) !important;
+}
+
+/* KEEP DISPLAY BRIGHTNESS AT MAX IN SILVER MODE */
+html[data-chassis="silver"] .lcd-glass {
+  filter: brightness(1.0) contrast(1.05) !important;
+  opacity: 1 !important;
+}
+
+/* Phosphor and VFD text inside screen */
+html[data-chassis="silver"] .lcd-glass .lcd-text:not(.off) {
+  text-shadow: 
+    0 0 3px #ffffff,
+    0 0 8px var(--color-lcd-primary),
+    0 0 18px var(--color-lcd-primary),
+    0 0 30px rgba(var(--color-lcd-primary-rgb), 0.95) !important;
+}
+
+html[data-chassis="silver"] .lcd-glass .lcd-text.amber:not(.off) {
+  text-shadow: 
+    0 0 3px #ffffff,
+    0 0 8px #ffb300,
+    0 0 18px #ff9100,
+    0 0 30px rgba(255, 170, 0, 0.95) !important;
+}
+
+

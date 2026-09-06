@@ -21,6 +21,7 @@ export type StereoTheme =
   | 'mint' 
   | 'laser-lime' 
   | 'white' 
+  | 'vintage-silver'
   | 'rgb';
 export type VisualizerMode = 
   | 'BARS' 
@@ -60,17 +61,23 @@ export const JDM_STATIONS = [
   { preset: 6, freq: 89.7, name: 'INDIAN RETRO 89.7', url: '/api/proxy?url=' + encodeURIComponent('https://stream.zeno.fm/v2zfmxef798uv') } // 24/7 Indian Retro Bollywood Classics
 ];
 
+const isSilverInitial = () => {
+  // Always start in black theme on fresh startup as requested
+  return false;
+};
+
 export function useStereo() {
+  const initialSilver = isSilverInitial();
   const [powered, setPowered] = useState(false);
   const [mode, setMode] = useState<StereoMode>('RADIO');
-  const [theme, setTheme] = useState<StereoTheme>('pink');
+  const [theme, setTheme] = useState<StereoTheme>(initialSilver ? 'blue' : 'pink');
   const [playing, setPlaying] = useState(false);
   
   const [volume, setVolume] = useState(0.6);
   const [attenuated, setAttenuated] = useState(false);
   const [loudness, setLoudness] = useState(false);
   const [dimmerLevel, setDimmerLevel] = useState(1); 
-  const [backlitLevel, setBacklitLevel] = useState<0 | 1 | 2 | 3>(3);
+  const [backlitLevel, setBacklitLevel] = useState<0 | 1 | 2 | 3>(initialSilver ? 0 : 3);
   const [frequency, setFrequency] = useState(80.0);
 
   const [mtl, setMtl] = useState(false);
@@ -101,6 +108,11 @@ export function useStereo() {
   const [presetIndex, setPresetIndex] = useState(5);
   const [activePresetName, setActivePresetName] = useState('HIP-HOP');
   const [showStreamDialog, setShowStreamDialog] = useState(false);
+  const [activeStreamEmbed, setActiveStreamEmbed] = useState<{
+    type: 'spotify' | 'apple' | 'soundcloud' | 'direct' | 'none';
+    embedUrl: string;
+    rawUrl: string;
+  } | null>(null);
 
   const openStreamDialog = () => {
     if (!powered) setPowered(true);
@@ -284,6 +296,7 @@ export function useStereo() {
         try {
           ytManager.current.stop();
           engine.current.stop();
+          setActiveStreamEmbed(null);
         } catch (e) {}
         setPlaying(false);
       }
@@ -343,21 +356,90 @@ export function useStereo() {
   };
 
   const loadYoutubeUrl = async (url: string) => {
+    const cleanUrl = url.trim();
+    if (!cleanUrl) return;
+
     if (isBooting) return;
     if (!powered) setPowered(true);
     setMode('CD');
-    setYtTitle('TUNING IN...');
     setShowStreamDialog(false);
 
-    const videoId = extractYouTubeId(url);
+    // 1. Check for Spotify URLs
+    if (cleanUrl.includes('spotify.com')) {
+      ytManager.current.stop();
+      engine.current.pause();
 
+      let embedUrl = cleanUrl;
+      // Convert standard spotify URL (e.g. open.spotify.com/track/... or open.spotify.com/playlist/...) into embed
+      if (!cleanUrl.includes('/embed/')) {
+        embedUrl = cleanUrl.replace('open.spotify.com/', 'open.spotify.com/embed/');
+      }
+      if (!embedUrl.includes('utm_source')) {
+        embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'utm_source=generator&theme=0';
+      }
+
+      setActiveStreamEmbed({ type: 'spotify', embedUrl, rawUrl: cleanUrl });
+      
+      // Extract clean identifier for LCD display
+      let titleGuess = 'SPOTIFY TRACK';
+      if (cleanUrl.includes('/playlist/')) titleGuess = 'SPOTIFY PLAYLIST';
+      else if (cleanUrl.includes('/album/')) titleGuess = 'SPOTIFY ALBUM';
+      else if (cleanUrl.includes('/artist/')) titleGuess = 'SPOTIFY ARTIST';
+      
+      setYtTitle(titleGuess);
+      setPlaying(true);
+      setCurrentTrack(1);
+      showToast('SPOTIFY STREAM CONNECTED');
+      return;
+    }
+
+    // 2. Check for Apple Music URLs
+    if (cleanUrl.includes('music.apple.com')) {
+      ytManager.current.stop();
+      engine.current.pause();
+
+      let embedUrl = cleanUrl;
+      if (!cleanUrl.includes('embed.music.apple.com')) {
+        embedUrl = cleanUrl.replace('music.apple.com', 'embed.music.apple.com');
+      }
+
+      setActiveStreamEmbed({ type: 'apple', embedUrl, rawUrl: cleanUrl });
+      let titleGuess = 'APPLE MUSIC STREAM';
+      if (cleanUrl.includes('/playlist/')) titleGuess = 'APPLE MUSIC PLAYLIST';
+      else if (cleanUrl.includes('/album/')) titleGuess = 'APPLE MUSIC ALBUM';
+      
+      setYtTitle(titleGuess);
+      setPlaying(true);
+      setCurrentTrack(1);
+      showToast('APPLE MUSIC CONNECTED');
+      return;
+    }
+
+    // 3. Check for SoundCloud URLs
+    if (cleanUrl.includes('soundcloud.com')) {
+      ytManager.current.stop();
+      engine.current.pause();
+
+      const embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanUrl)}&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`;
+      setActiveStreamEmbed({ type: 'soundcloud', embedUrl, rawUrl: cleanUrl });
+      setYtTitle('SOUNDCLOUD STREAM');
+      setPlaying(true);
+      setCurrentTrack(1);
+      showToast('SOUNDCLOUD CONNECTED');
+      return;
+    }
+
+    // 4. Check for YouTube (Video ID, youtu.be, or youtube.com)
+    const videoId = extractYouTubeId(cleanUrl);
     if (videoId) {
+      setActiveStreamEmbed(null);
       // Pause native engine
       engine.current.pause();
+      setYtTitle('TUNING IN YOUTUBE...');
       
       try {
         // Fetch official title via oEmbed
-        const infoRes = await fetch(`/api/yt/info?url=${encodeURIComponent(url)}`);
+        const infoRes = await fetch(`/api/yt/info?url=${encodeURIComponent(cleanUrl)}`);
         if (infoRes.ok) {
           const info = await infoRes.json();
           setYtTitle(info.title ? info.title.toUpperCase() : `YT: ${videoId}`);
@@ -372,24 +454,31 @@ export function useStereo() {
       ytManager.current.setVolume(volume, attenuated);
       setPlaying(true);
       setCurrentTrack(1);
-    } else {
-      // It is a direct web audio or radio stream URL
-      ytManager.current.stop();
-      try {
-        const streamUrl = url.startsWith('http') ? `/api/proxy?url=${encodeURIComponent(url)}` : url;
-        engine.current.playStream(streamUrl);
-        setYtTitle('WEB STREAM');
-        setCurrentTrack(1);
-        setPlaying(true);
-      } catch (err) {
-        console.error(err);
-        setYtTitle('STREAM ERROR');
-      }
+      return;
+    }
+
+    // 5. It is a direct web audio, radio stream, podcast, MP3/AAC, or arbitrary web stream URL
+    setActiveStreamEmbed(null);
+    ytManager.current.stop();
+    try {
+      const streamUrl = cleanUrl.startsWith('http') ? `/api/proxy?url=${encodeURIComponent(cleanUrl)}` : cleanUrl;
+      engine.current.playStream(streamUrl);
+      setYtTitle('WEB AUDIO STREAM');
+      setCurrentTrack(1);
+      setPlaying(true);
+      showToast('WEB STREAM PLAYING');
+    } catch (err) {
+      console.error(err);
+      setYtTitle('STREAM ERROR');
     }
   };
 
   const playPause = () => {
     if (!powered || isBooting) return;
+    if (activeStreamEmbed) {
+      setPlaying(prev => !prev);
+      return;
+    }
     if (ytManager.current.isYtActive) {
       if (playing) {
         ytManager.current.pause();
@@ -552,6 +641,12 @@ export function useStereo() {
   };
 
   const cycleDimmer = () => {
+    const isSilver = typeof document !== 'undefined' && document.documentElement.getAttribute('data-chassis') === 'silver';
+    if (isSilver) {
+      setDimmerLevel(1);
+      showToast('DIMMER: 100% (MAX LOCKED)');
+      return;
+    }
     setDimmerLevel(d => {
       const next = d === 1 ? 0.6 : 1;
       showToast(`DIMMER: ${next === 1 ? '100%' : '60%'}`);
@@ -560,6 +655,7 @@ export function useStereo() {
   };
 
   const cycleBacklitLevel = () => {
+    const isSilver = typeof document !== 'undefined' && document.documentElement.getAttribute('data-chassis') === 'silver';
     setBacklitLevel(lvl => {
       const next = (lvl === 3 ? 0 : lvl + 1) as 0 | 1 | 2 | 3;
       const labels: Record<number, string> = {
@@ -569,8 +665,13 @@ export function useStereo() {
         3: 'BKLT: LEVEL 3'
       };
       showToast(labels[next]);
-      const dimmerMap: Record<number, number> = { 0: 0.35, 1: 0.55, 2: 0.8, 3: 1.0 };
-      setDimmerLevel(dimmerMap[next]);
+      if (isSilver) {
+        // In silver mode, keep display brightness constant at max
+        setDimmerLevel(1);
+      } else {
+        const dimmerMap: Record<number, number> = { 0: 0.35, 1: 0.55, 2: 0.8, 3: 1.0 };
+        setDimmerLevel(dimmerMap[next]);
+      }
       return next;
     });
   };
@@ -594,6 +695,7 @@ export function useStereo() {
       'mint',
       'laser-lime',
       'white',
+      'vintage-silver',
       'rgb'
     ];
 
@@ -615,6 +717,7 @@ export function useStereo() {
       'mint': 'COLOR: NEON MINT',
       'laser-lime': 'COLOR: LASER LIME',
       'white': 'COLOR: PURE WHITE',
+      'vintage-silver': 'COLOR: VINTAGE SILVER',
       'rgb': 'COLOR: RGB SPECTRUM'
     };
 
@@ -719,7 +822,7 @@ export function useStereo() {
     powered, togglePower,
     isBooting,
     mode, setMode,
-    theme, cycleTheme,
+    theme, cycleTheme, setTheme,
     playing, playPause, seekFwd, seekRev,
     volume, adjustVolume, setDirectVolume,
     bass, adjustBass,
@@ -735,8 +838,8 @@ export function useStereo() {
       setLoudness(v);
       showToast(`LOUDNESS: ${v ? 'ON' : 'OFF'}`);
     },
-    dimmerLevel, cycleDimmer,
-    backlitLevel, cycleBacklitLevel,
+    dimmerLevel, cycleDimmer, setDimmerLevel,
+    backlitLevel, cycleBacklitLevel, setBacklitLevel,
     frequency, tuneUp, tuneDown,
     eq, adjustEq, eqMode, applyEqPreset, activePresetName,
     currentTrack, currentTime, ytTitle,
@@ -750,6 +853,7 @@ export function useStereo() {
     auto, toggleAuto,
     autoScanRadio,
     memory, selectMemory,
-    showStreamDialog, setShowStreamDialog, openStreamDialog, closeStreamDialog
+    showStreamDialog, setShowStreamDialog, openStreamDialog, closeStreamDialog,
+    activeStreamEmbed, setActiveStreamEmbed
   };
 }

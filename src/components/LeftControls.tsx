@@ -66,7 +66,7 @@ export const LeftControls: React.FC<Props> = ({
   };
 
   return (
-    <div className="w-[145px] min-w-[145px] max-w-[145px] flex-shrink-0 flex flex-col justify-between h-full py-1 px-1.5 border-r border-[#080808] shadow-[1px_0_0_#1a1a1a] relative bg-gradient-to-b from-[#141414] via-[#101010] to-[#0a0a0a] select-none">
+    <div className="left-controls-panel w-[145px] min-w-[145px] max-w-[145px] flex-shrink-0 flex flex-col justify-between h-full py-1 px-1.5 border-r border-[#080808] shadow-[1px_0_0_#1a1a1a] relative bg-gradient-to-b from-[#141414] via-[#101010] to-[#0a0a0a] select-none">
       {/* Top row: Transport & Seek */}
       <div className="flex flex-col gap-1 w-full">
         <div className="grid grid-cols-2 gap-1">
@@ -113,7 +113,7 @@ export const LeftControls: React.FC<Props> = ({
       </div>
 
       {/* Center: Circular Knurled VOLUME Dial */}
-      <div className="my-0.5 py-0.5 border-y border-[#1c1c1c] flex flex-col items-center justify-center bg-[#090909]/60 rounded">
+      <div className="volume-dial-container my-0.5 py-0.5 border-y border-[#1c1c1c] flex flex-col items-center justify-center bg-[#090909]/60 rounded">
         <RotaryDial
           label="VOLUME"
           value={volume}
@@ -177,7 +177,7 @@ export const LeftControls: React.FC<Props> = ({
             style={{ '--boot-delay': '0.18s' } as React.CSSProperties}
             title="Adjust Button Backlight Level (OFF, 1, 2, 3)"
           >
-            BKLT: {backlitLevel === 0 ? 'OFF' : backlitLevel}
+            BACKLIGHT
           </button>
           <button 
             onClick={selectDisplayMode} 
@@ -191,7 +191,7 @@ export const LeftControls: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Bottom: Mechanical POWER Button (Red LED removed) + IR Sensor */}
+      {/* Bottom: Mechanical POWER Button (Red LED removed) + IR Sensor in Black Hole */}
       <div className="pt-1 border-t border-[#1a1a1a] flex flex-col gap-1">
         <button 
           onClick={togglePower} 
@@ -204,8 +204,11 @@ export const LeftControls: React.FC<Props> = ({
         </button>
 
         <div className="text-[6.5px] font-label font-bold tracking-wider text-center flex justify-center items-center gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-[#111] via-[#333] to-[#0a0a0a] border border-[#444] relative overflow-hidden">
-            <div className="absolute top-0.5 left-0.5 w-0.5 h-0.5 bg-white/60 rounded-full"></div>
+          {/* Deep Black Sensor Aperture Hole */}
+          <div className="w-2.5 h-2.5 rounded-full bg-black border border-black shadow-[inset_0_1.5px_3px_#000] flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-tr from-[#0a0a0a] via-[#222] to-[#000] border border-[#222] relative overflow-hidden">
+              <div className="absolute top-0.5 left-0.5 w-0.5 h-0.5 bg-white/70 rounded-full" />
+            </div>
           </div>
           <span className={`transition-all duration-300 ${powered ? 'text-[var(--color-lcd-primary)] drop-shadow-[0_0_2px_var(--color-lcd-primary)]' : 'text-zinc-600'}`}>
             REMOTE SENSOR

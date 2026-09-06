@@ -1,6 +1,6 @@
 {
-  "name": "Time Machine Stereo",
-  "description": "Retro 90s JDM Car Stereo and Graphic Equalizer with Visualizer and Audio Streaming",
+  "name": "Retro din",
+  "description": "Retro din stereo player",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
