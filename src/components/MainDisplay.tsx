@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Radio } from 'lucide-react';
 import { SpectrumAnalyzer } from './SpectrumAnalyzer';
 import { StereoMode, VisualizerMode, JDM_STATIONS } from '../hooks/useStereo';
 import { AudioEngine, EqBand } from '../audio/AudioEngine';
 import { PerformanceSettings } from '../hooks/usePerformanceSettings';
+import { AndroidRecoveryMenu, RecoverySettingItem } from './AndroidRecoveryMenu';
 
 interface Props {
   powered: boolean;
@@ -37,12 +39,19 @@ interface Props {
   setMode?: (m: StereoMode) => void;
   openStreamDialog?: () => void;
   perfSettings?: PerformanceSettings;
+  showSetupMenu?: boolean;
+  setShowSetupMenu?: (val: boolean) => void;
+  updatePerfSetting?: (key: any, val: any) => void;
+  setVisualizerMode?: (mode: VisualizerMode) => void;
   activeStreamEmbed?: {
     type: 'spotify' | 'apple' | 'soundcloud' | 'direct' | 'none';
     embedUrl: string;
     rawUrl: string;
   } | null;
   setActiveStreamEmbed?: (val: any) => void;
+  recoveryItems?: RecoverySettingItem[];
+  setupMenuIndex?: number;
+  onSelectSetupMenuIndex?: (idx: number) => void;
 }
 
 export const MainDisplay: React.FC<Props> = ({ 
@@ -51,7 +60,8 @@ export const MainDisplay: React.FC<Props> = ({
   theme, selectMemory, visualizerMode = 'FIRE_SPECTRUM', cycleVisualizerMode, toastMessage,
   speakerBalance = 'CENTER', toggleSpeakerBalance, activePresetName = 'HIP-HOP',
   showStreamDialog, setShowStreamDialog, setMode, openStreamDialog, perfSettings,
-  activeStreamEmbed, setActiveStreamEmbed
+  showSetupMenu = false, setShowSetupMenu, updatePerfSetting, setVisualizerMode,
+  activeStreamEmbed, setActiveStreamEmbed, recoveryItems, setupMenuIndex, onSelectSetupMenuIndex
 }) => {
   const [internalShowYt, setInternalShowYt] = useState(false);
   const isStreamModalOpen = showStreamDialog !== undefined ? showStreamDialog : internalShowYt;
@@ -291,7 +301,7 @@ export const MainDisplay: React.FC<Props> = ({
                 }}
                 className="p-1 rounded bg-[#12141a] hover:bg-[#1c202a] border border-white/5 text-left text-[8px] font-mono text-zinc-300 hover:text-white cursor-pointer truncate transition-colors flex items-center gap-1"
               >
-                <span className="text-[#00e5ff]">📻</span>
+                <Radio className="w-2.5 h-2.5 text-[#00e5ff] flex-shrink-0" />
                 <span className="truncate">Tokyo FM Direct</span>
               </button>
             </div>
@@ -705,7 +715,19 @@ export const MainDisplay: React.FC<Props> = ({
               canvasGlow={perfSettings?.canvasGlow}
               lowEndMode={perfSettings?.lowEndMode}
               simplifiedDisplayOnIdle={perfSettings?.simplifiedDisplayOnIdle}
+              displayMode={perfSettings?.displayMode}
+              screenBrightness={perfSettings?.screenBrightness}
             />
+
+            {/* Android Recovery Menu Overlaid on Visualizer Screen */}
+            {showSetupMenu && powered && (
+              <AndroidRecoveryMenu 
+                selectedIndex={setupMenuIndex ?? 0}
+                items={recoveryItems ?? []}
+                compact={false}
+                onSelect={onSelectSetupMenuIndex}
+              />
+            )}
           </div>
           
           {/* Frequency Labels below */}

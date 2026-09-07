@@ -28,6 +28,8 @@ interface Props {
   adjustBass: (val: number) => void;
   isolated?: boolean;
   onToggleCarPlay?: () => void;
+  showSetupMenu?: boolean;
+  toggleSetupMenu?: () => void;
 }
 
 export const RightControls: React.FC<Props> = ({ 
@@ -54,7 +56,9 @@ export const RightControls: React.FC<Props> = ({
   bass, 
   adjustBass,
   isolated = false,
-  onToggleCarPlay
+  onToggleCarPlay,
+  showSetupMenu = false,
+  toggleSetupMenu
 }) => {
   const usbInputRef = useRef<HTMLInputElement>(null);
   const auxInputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +84,7 @@ export const RightControls: React.FC<Props> = ({
   };
 
   return (
-    <div className="right-controls-panel w-[145px] min-w-[145px] max-w-[145px] flex-shrink-0 flex flex-col justify-between h-full py-1 px-1.5 border-l border-[#080808] shadow-[-1px_0_0_#1a1a1a] bg-gradient-to-b from-[#141414] via-[#101010] to-[#0a0a0a] select-none">
+    <div className="right-controls-panel w-[145px] min-w-[145px] max-w-[145px] flex-shrink-0 flex flex-col justify-between h-full py-1 px-1.5 border-l border-[#101216] shadow-[-1px_0_0_rgba(255,255,255,0.04)] bg-gradient-to-b from-[#1a1c22] via-[#14161a] to-[#101114] select-none">
       {/* Source Selection Buttons: TUNER, CD (with STREAM & Beeping LED), TAPE */}
       <div className="flex flex-col gap-1 w-full">
         <div className="grid grid-cols-3 gap-1">
@@ -229,26 +233,35 @@ export const RightControls: React.FC<Props> = ({
           </button>
         </div>
 
-        {/* Master COLOR Switch (Cycles 11 Backlit Hues) & CarPlay In-Car Fullscreen Mode */}
-        <div className="grid grid-cols-2 gap-1">
+        {/* Master COLOR Switch, SETUP Touch Menu, and CARPLAY Mode */}
+        <div className="grid grid-cols-3 gap-1">
           <button 
             onClick={cycleTheme} 
             disabled={!powered} 
-            className={`btn-backlit h-6 text-[7px] font-bold tracking-wider flex items-center justify-center gap-1 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-6 text-[6.5px] font-bold tracking-wider flex items-center justify-center gap-0.5 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
             style={{ '--boot-delay': '1.25s' } as React.CSSProperties}
             title="Cycle All Backlight & Display Colors"
           >
             <span>COLOR</span>
           </button>
           <button 
+            onClick={toggleSetupMenu} 
+            disabled={!powered} 
+            className={`btn-backlit h-6 text-[6.5px] font-bold tracking-wider flex items-center justify-center gap-0.5 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${showSetupMenu ? 'active font-black shadow-[0_0_6px_var(--color-lcd-primary)]' : ''}`}
+            style={{ '--boot-delay': '1.26s' } as React.CSSProperties}
+            title="Open Touch Setup Menu on Visualizer Display"
+          >
+            <span>SETUP</span>
+          </button>
+          <button 
             onClick={onToggleCarPlay} 
             disabled={!powered} 
-            className={`btn-backlit h-6 text-[7px] font-bold tracking-wider flex items-center justify-center gap-1 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${isolated ? 'active font-black shadow-[0_0_6px_var(--color-lcd-primary)]' : ''}`}
+            className={`btn-backlit h-6 text-[6.5px] font-bold tracking-wider flex items-center justify-center gap-0.5 ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${isolated ? 'active font-black shadow-[0_0_6px_var(--color-lcd-primary)]' : ''}`}
             style={{ '--boot-delay': '1.28s' } as React.CSSProperties}
             title={isolated ? "Exit In-Car Fullscreen Mode" : "CarPlay In-Car Mode (Fullscreen Edge-to-Edge)"}
           >
-            <CarPlayIcon className="w-2.5 h-2.5" />
-            <span>CARPLAY</span>
+            <CarPlayIcon className="w-2 h-2" />
+            <span>CAR</span>
           </button>
         </div>
       </div>

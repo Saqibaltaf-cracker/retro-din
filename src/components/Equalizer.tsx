@@ -34,8 +34,8 @@ export const Equalizer: React.FC<Props> = ({
 }) => {
   return (
     <div className="equalizer-deck-panel w-full h-[105px] min-h-[105px] max-h-[105px] px-2.5 pb-1.5 pt-1 border-t border-[#1a1a1a] bg-gradient-to-b from-[#121212] via-[#0e0e0e] to-[#080808] transition-all select-none flex-shrink-0 flex flex-col justify-between">
-      {/* Top control bar with Illuminated LED Strip Border */}
-      <div className="flex items-center justify-between mb-0.5 px-0.5 h-5 flex-shrink-0">
+      {/* Top control bar with Illuminated LED Strip Border & Divider Border Below EQ Buttons */}
+      <div className="flex items-center justify-between pb-1 mb-1 px-0.5 h-6 flex-shrink-0 border-b border-[#282b33] shadow-[0_1px_0_rgba(255,255,255,0.06)]">
         {/* Left EQ Cluster with Solid Thin LED Border (No Outer Glow) */}
         <div 
           className="flex items-center gap-1 px-1 py-0.5 rounded-[2px] transition-all duration-300 eq-cluster-border"

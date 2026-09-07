@@ -425,7 +425,7 @@ body.is-isolated #root {
   font-weight: 700;
   cursor: pointer;
   position: relative;
-  transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.05s;
+  transition: color 1.4s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.4s ease, transform 0.05s;
   border-radius: 2px;
   overflow: hidden;
 }
@@ -441,7 +441,7 @@ body.is-isolated #root {
   pointer-events: none;
 }
 
-/* Illuminated state: ONLY text & symbols inside light up. Button borders & chassis remain 100% metallic and dark. */
+/* Illuminated state: ONLY text & symbols inside light up with smooth transition. */
 .btn-backlit.lit {
   color: var(--color-lcd-primary);
   text-shadow: 0 1px 1px rgba(0,0,0,0.95), 0 0 1px rgba(var(--color-lcd-primary-rgb), 0.5);
@@ -454,6 +454,7 @@ body.is-isolated #root {
     0 2px 4px rgba(0,0,0,0.85),
     inset 0 1px 1px rgba(255,255,255,0.14),
     inset 0 -1px 1px rgba(0,0,0,0.7);
+  transition: color 1.4s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 1.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.4s ease;
 }
 
 /* Slow, organic light breathing for illuminated text only (zero border/chassis change) */
@@ -634,33 +635,37 @@ html[data-backlit-level="3"] .rotary-notch {
   color: #ffffff !important;
 }
 
-/* Startup Left-to-Right Backlight Wave Pulse - Only illuminates the text & symbol inside */
+/* Startup Smooth Filament Ignition - Gently and smoothly fades in backlight */
 @keyframes buttonBootSweep {
   0% {
-    color: #444;
+    color: #383a40;
     text-shadow: none;
+    opacity: 0.3;
   }
-  28% {
-    color: #ffffff;
-    text-shadow: 0 0 2px #ffffff;
+  35% {
+    color: rgba(var(--color-lcd-primary-rgb), 0.35);
+    text-shadow: 0 0 1px rgba(var(--color-lcd-primary-rgb), 0.2);
+    opacity: 0.6;
   }
-  65% {
-    color: var(--color-lcd-primary);
-    text-shadow: 0 1px 1px rgba(0,0,0,0.95);
+  75% {
+    color: rgba(var(--color-lcd-primary-rgb), 0.85);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.95), 0 0 1.5px rgba(var(--color-lcd-primary-rgb), 0.4);
+    opacity: 0.9;
   }
   100% {
     color: var(--color-lcd-primary);
-    text-shadow: 0 1px 1px rgba(0,0,0,0.95);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.95), 0 0 1px rgba(var(--color-lcd-primary-rgb), 0.5);
+    opacity: 1;
   }
 }
 
 .btn-backlit.booting {
-  animation: buttonBootSweep 1.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  animation: buttonBootSweep 2.2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
   animation-delay: var(--boot-delay, 0s);
 }
 
 .rocker-half.backlit-half.booting {
-  animation: buttonBootSweep 1.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  animation: buttonBootSweep 2.2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
   animation-delay: var(--boot-delay, 0s);
 }
 

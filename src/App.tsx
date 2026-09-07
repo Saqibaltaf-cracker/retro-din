@@ -10,6 +10,7 @@ import { KeyBindingsModal } from './components/KeyBindingsModal';
 import { SettingsModal } from './components/SettingsModal';
 import { useStereo } from './hooks/useStereo';
 import { usePerformanceSettings } from './hooks/usePerformanceSettings';
+import { useRecoverySettings } from './hooks/useRecoverySettings';
 import { 
   ExternalLink, 
   Video, 
@@ -35,6 +36,19 @@ export default function App() {
     autoOptimize,
     resetDefaults
   } = usePerformanceSettings();
+
+  const {
+    setupMenuIndex,
+    setSetupMenuIndex,
+    recoveryItems,
+    handleSetupAction
+  } = useRecoverySettings({
+    stereo,
+    perfSettings,
+    updateSetting,
+    toggleLowEndMode,
+    resetDefaults
+  });
 
   const [isolated, setIsolated] = useState(false);
   const [zoomMultiplier, setZoomMultiplier] = useState(1.0);
@@ -136,9 +150,40 @@ export default function App() {
         }
       }
 
-      if (key === ',' || key === 'O') {
+      // If recovery setup menu is active, map TUNE (Up/Down) to scrolling and FF/REW (Right/Left) to option changes!
+      if (stereo.showSetupMenu || showSettingsModal) {
+        if (key === 'Escape') {
+          e.preventDefault();
+          stereo.setShowSetupMenu(false);
+          setShowSettingsModal(false);
+          return;
+        }
+        if (key === 'ArrowUp' || key === 'k') {
+          e.preventDefault();
+          handleSetupAction('UP');
+          return;
+        }
+        if (key === 'ArrowDown' || key === 'j') {
+          e.preventDefault();
+          handleSetupAction('DOWN');
+          return;
+        }
+        if (key === 'ArrowRight' || key === 'Enter' || key === 'l') {
+          e.preventDefault();
+          handleSetupAction('NEXT');
+          return;
+        }
+        if (key === 'ArrowLeft' || key === 'h') {
+          e.preventDefault();
+          handleSetupAction('PREV');
+          return;
+        }
+      }
+
+      if (key === ',' || key === 'o' || key === 'O') {
         e.preventDefault();
-        setShowSettingsModal(prev => !prev);
+        if (!stereo.powered) stereo.togglePower();
+        stereo.setShowSetupMenu(prev => !prev);
         return;
       }
 
@@ -265,7 +310,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [stereo, showPlayerGuide, isolated, showSettingsModal]);
+  }, [stereo, showPlayerGuide, isolated, showSettingsModal, handleSetupAction]);
 
   // Edge-to-edge CarPlay Fullscreen In-Car Mode Toggle
   const toggleCarPlayMode = () => {
@@ -418,16 +463,21 @@ export default function App() {
         <div className="fixed top-2.5 sm:top-3 right-2.5 sm:right-3 z-50 flex items-center gap-1.5 sm:gap-2">
           {/* Settings & Low-End Device Optimization Button */}
           <button
-            onClick={() => setShowSettingsModal(true)}
+            onClick={() => {
+              if (!stereo.powered) stereo.togglePower();
+              stereo.setShowSetupMenu(prev => !prev);
+            }}
             className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10.5px] sm:text-xs font-mono font-bold tracking-wider uppercase border transition-all duration-300 backdrop-blur-md cursor-pointer flex items-center gap-1.5 shadow-lg active:scale-95 ${
-              perfSettings.lowEndMode 
+              stereo.showSetupMenu 
+                ? 'bg-[#1a73e8]/30 border-[#1a73e8] text-white shadow-[0_0_12px_rgba(26,115,232,0.6)]'
+                : perfSettings.lowEndMode 
                 ? 'bg-amber-950/40 border-amber-500/60 text-amber-300 hover:bg-amber-900/50 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
                 : 'bg-[#0e1017]/90 hover:bg-[#181a24] border-white/15 hover:border-white/30 text-zinc-300 hover:text-white'
             }`}
-            title="Settings & Low-End Device Optimization [,]"
+            title="Toggle Android Recovery Setup Menu [, or SETUP key]"
           >
-            <Settings className={`w-3.5 h-3.5 ${perfSettings.lowEndMode ? 'text-amber-400 animate-spin-slow' : 'text-zinc-400'}`} />
-            <span className="hidden md:inline">SETTINGS</span>
+            <Settings className={`w-3.5 h-3.5 ${stereo.showSetupMenu ? 'text-[#00e5ff]' : perfSettings.lowEndMode ? 'text-amber-400 animate-spin-slow' : 'text-zinc-400'}`} />
+            <span className="hidden md:inline">SETUP</span>
             {perfSettings.lowEndMode && (
               <span className="text-[8px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">
                 ECO
@@ -620,6 +670,10 @@ export default function App() {
               stereoState={stereo} 
               perfSettings={perfSettings}
               onToggleCarPlay={toggleCarPlayMode}
+              recoveryItems={recoveryItems}
+              setupMenuIndex={setupMenuIndex}
+              onSetupAction={handleSetupAction}
+              onSelectSetupMenuIndex={setSetupMenuIndex}
             />
           </div>
         </div>
@@ -779,25 +833,13 @@ export default function App() {
         onClose={() => setShowPlayerGuide(false)} 
       />
 
-      {/* Device Performance, Low-End Mode & Mobile Settings Modal */}
+      {/* Android Recovery Settings Modal */}
       <SettingsModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
-        settings={perfSettings}
-        diagnostics={diagnostics}
-        updateSetting={updateSetting}
-        toggleLowEndMode={toggleLowEndMode}
-        applyPreset={applyPreset}
-        autoOptimize={autoOptimize}
-        resetDefaults={resetDefaults}
-        onSelectChassis={(silver: boolean) => {
-          updateSetting('vintageSilver', silver);
-          if (silver) {
-            stereo.setTheme('blue');
-            stereo.setDimmerLevel(1);
-            stereo.setBacklitLevel(0);
-          }
-        }}
+        selectedIndex={setupMenuIndex}
+        items={recoveryItems}
+        onSetupAction={handleSetupAction}
       />
     </div>
   );

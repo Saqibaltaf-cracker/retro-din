@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { AudioEngine, EqBand, EQ_BANDS } from '../audio/AudioEngine';
 import { YouTubeManager, extractYouTubeId, extractYouTubePlaylistId } from '../audio/YouTubeManager';
 
@@ -21,8 +21,7 @@ export type StereoTheme =
   | 'mint' 
   | 'laser-lime' 
   | 'white' 
-  | 'vintage-silver'
-  | 'rgb';
+  | 'vintage-silver';
 export type VisualizerMode = 
   | 'BARS' 
   | 'PEAK_FALL' 
@@ -54,11 +53,11 @@ export const EQ_PRESETS = [
 // 90s JDM FM Stations (using high-fidelity streams with full CORS support for Web Audio Analyzer)
 export const JDM_STATIONS = [
   { preset: 1, freq: 76.1, name: 'INTER FM 76.1', url: 'https://ice1.somafm.com/vaporwaves-128-mp3' }, // Vaporwaves / City Pop
-  { preset: 2, freq: 80.0, name: 'TOKYO FM 80.0', url: 'https://ice1.somafm.com/groovesalad-128-mp3' }, // Chill beats
+  { preset: 2, freq: 80.0, name: 'INDIAN GHAZAL 80.0', url: 'https://prclive1.listenon.in/Ghazal' }, // Indian Ghazals 24/7
   { preset: 3, freq: 81.3, name: '90S ENGLISH HITS 81.3', url: 'https://dancewave.online/retrodance.mp3' }, // English Old 90s Hits
   { preset: 4, freq: 82.5, name: 'ENGLISH HITS LATEST 82.5', url: 'https://ice1.somafm.com/poptron-128-mp3' }, // English Hits Latest
   { preset: 5, freq: 84.7, name: '2000S BOLLYWOOD 84.7', url: 'https://drive.uber.radio/uber/bollywood2000s/icecast.audio' }, // 2000s Bollywood Hits
-  { preset: 6, freq: 89.7, name: 'INDIAN RETRO 89.7', url: '/api/proxy?url=' + encodeURIComponent('https://stream.zeno.fm/v2zfmxef798uv') } // 24/7 Indian Retro Bollywood Classics
+  { preset: 6, freq: 89.7, name: 'RETRO 80S 89.7', url: 'https://ice1.somafm.com/u80s-128-mp3' } // 24/7 Retro 80s Synthpop & Hits
 ];
 
 const isSilverInitial = () => {
@@ -108,6 +107,11 @@ export function useStereo() {
   const [presetIndex, setPresetIndex] = useState(5);
   const [activePresetName, setActivePresetName] = useState('HIP-HOP');
   const [showStreamDialog, setShowStreamDialog] = useState(false);
+  const [showSetupMenu, setShowSetupMenu] = useState(false);
+  const toggleSetupMenu = useCallback(() => {
+    if (!powered) return;
+    setShowSetupMenu(prev => !prev);
+  }, [powered]);
   const [activeStreamEmbed, setActiveStreamEmbed] = useState<{
     type: 'spotify' | 'apple' | 'soundcloud' | 'direct' | 'none';
     embedUrl: string;
@@ -725,8 +729,7 @@ export function useStereo() {
       'mint',
       'laser-lime',
       'white',
-      'vintage-silver',
-      'rgb'
+      'vintage-silver'
     ];
 
     const themeLabels: Record<StereoTheme, string> = {
@@ -747,8 +750,7 @@ export function useStereo() {
       'mint': 'COLOR: NEON MINT',
       'laser-lime': 'COLOR: LASER LIME',
       'white': 'COLOR: PURE WHITE',
-      'vintage-silver': 'COLOR: VINTAGE SILVER',
-      'rgb': 'COLOR: RGB SPECTRUM'
+      'vintage-silver': 'COLOR: VINTAGE SILVER'
     };
 
     setTheme(t => {
@@ -831,7 +833,8 @@ export function useStereo() {
     setFrequency(nextStation.freq);
     setYtTitle(nextStation.name);
     ytManager.current.stop();
-    engine.current.playStream(nextStation.url);
+    const streamUrl = nextStation.url.startsWith('http') ? `/api/proxy?url=${encodeURIComponent(nextStation.url)}` : nextStation.url;
+    engine.current.playStream(streamUrl);
     setPlaying(true);
   };
 
@@ -846,7 +849,8 @@ export function useStereo() {
       setFrequency(station.freq);
       setYtTitle(station.name);
       ytManager.current.stop();
-      engine.current.playStream(station.url);
+      const streamUrl = station.url.startsWith('http') ? `/api/proxy?url=${encodeURIComponent(station.url)}` : station.url;
+      engine.current.playStream(streamUrl);
       setPlaying(true);
       showToast(`PRESET ${preset}: ${station.name}`);
     } else {
@@ -862,8 +866,8 @@ export function useStereo() {
     playing, playPause, seekFwd, seekRev,
     volume, adjustVolume, setDirectVolume,
     bass, adjustBass,
-    visualizerMode, cycleVisualizerMode,
-    toastMessage,
+    visualizerMode, cycleVisualizerMode, setVisualizerMode,
+    toastMessage, showToast,
     speakerBalance, toggleSpeakerBalance,
     displayInfoIndex, selectDisplayMode,
     attenuated, setAttenuated: (v: boolean) => {
@@ -890,6 +894,7 @@ export function useStereo() {
     autoScanRadio,
     memory, selectMemory,
     showStreamDialog, setShowStreamDialog, openStreamDialog, closeStreamDialog,
+    showSetupMenu, setShowSetupMenu, toggleSetupMenu,
     activeStreamEmbed, setActiveStreamEmbed
   };
 }

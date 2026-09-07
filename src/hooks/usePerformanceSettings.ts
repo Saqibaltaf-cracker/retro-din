@@ -22,6 +22,14 @@ export interface PerformanceSettings {
   mobileAutoFit: boolean;
   touchAssist: boolean;
   vintageSilver: boolean; // Vintage Silver Aluminum Hi-Fi Chassis Edition
+
+  // Display & Visualizer Controls
+  displayMode: 'oled' | 'matrix'; // OLED (smooth phosphor lines) vs MATRIX (single-color dot matrix)
+  screenBrightness: number; // 0.25 to 1.0 (25% to 100%)
+  glassReflection: 'none' | 'subtle' | 'high';
+  analogWarmth: boolean; // Vacuum tube saturation
+  tapeHiss: boolean; // Analog cassette tape hiss floor
+  autoCarPlayLandscape: boolean; // Rotate to landscape switches straight to CarPlay mode
 }
 
 export interface DeviceDiagnostics {
@@ -99,7 +107,13 @@ export function getDefaultSettings(isLowEnd: boolean): PerformanceSettings {
       reduceMotion: false,
       mobileAutoFit: true,
       touchAssist: true,
-      vintageSilver: false
+      vintageSilver: false,
+      displayMode: 'oled',
+      screenBrightness: 1.0,
+      glassReflection: 'subtle',
+      analogWarmth: false,
+      tapeHiss: false,
+      autoCarPlayLandscape: true
     };
   }
 
@@ -115,7 +129,13 @@ export function getDefaultSettings(isLowEnd: boolean): PerformanceSettings {
     reduceMotion: false,
     mobileAutoFit: true,
     touchAssist: false,
-    vintageSilver: false
+    vintageSilver: false,
+    displayMode: 'oled',
+    screenBrightness: 1.0,
+    glassReflection: 'subtle',
+    analogWarmth: true,
+    tapeHiss: false,
+    autoCarPlayLandscape: true
   };
 }
 

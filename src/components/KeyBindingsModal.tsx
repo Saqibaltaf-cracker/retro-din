@@ -561,7 +561,7 @@ export const KeyBindingsModal: React.FC<PlayerControlsModalProps> = ({ isOpen, o
                       {ctrl.name}
                     </h3>
                     <span className="text-[9px] font-mono text-zinc-400 block mt-0.5">
-                      📍 {ctrl.location}
+                      <span className="text-zinc-500 mr-1">LOC:</span>{ctrl.location}
                     </span>
                     <span className="inline-block mt-1 text-[8px] font-mono px-1.5 py-0.2 rounded bg-white/5 border border-white/10 text-zinc-400 uppercase">
                       {ctrl.tag}

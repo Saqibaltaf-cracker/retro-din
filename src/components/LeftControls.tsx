@@ -29,6 +29,8 @@ interface Props {
   bSkip: boolean;
   toggleBSkip: () => void;
   selectDisplayMode?: () => void;
+  showSetupMenu?: boolean;
+  onSetupAction?: (action: 'UP' | 'DOWN' | 'NEXT' | 'PREV') => void;
 }
 
 export const LeftControls: React.FC<Props> = ({
@@ -55,7 +57,9 @@ export const LeftControls: React.FC<Props> = ({
   selectMemory,
   bSkip,
   toggleBSkip,
-  selectDisplayMode
+  selectDisplayMode,
+  showSetupMenu = false,
+  onSetupAction
 }) => {
   const handleVolumeChange = (newVal: number) => {
     if (setDirectVolume) {
@@ -66,26 +70,46 @@ export const LeftControls: React.FC<Props> = ({
   };
 
   return (
-    <div className="left-controls-panel w-[145px] min-w-[145px] max-w-[145px] flex-shrink-0 flex flex-col justify-between h-full py-1 px-1.5 border-r border-[#080808] shadow-[1px_0_0_#1a1a1a] relative bg-gradient-to-b from-[#141414] via-[#101010] to-[#0a0a0a] select-none">
-      {/* Top row: Transport & Seek */}
+    <div className="left-controls-panel w-[145px] min-w-[145px] max-w-[145px] flex-shrink-0 flex flex-col justify-between h-full py-1 px-1.5 border-r border-[#101216] shadow-[1px_0_0_rgba(255,255,255,0.04)] relative bg-gradient-to-b from-[#1a1c22] via-[#14161a] to-[#101114] select-none">
+      {/* Top row: Transport & Seek / Recovery Navigation */}
       <div className="flex flex-col gap-1 w-full">
         <div className="grid grid-cols-2 gap-1">
           <button 
-            onClick={seekRev} 
+            onClick={() => {
+              if (showSetupMenu) {
+                onSetupAction?.('PREV');
+              } else {
+                seekRev();
+              }
+            }} 
             disabled={!powered} 
-            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-1 relative font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-1 relative font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${
+              showSetupMenu 
+                ? '!border-[#ffea00] !text-[#ffea00] !bg-[#ffea00]/20 shadow-[0_0_12px_rgba(255,234,0,0.85)] ring-1 ring-[#ffea00] animate-pulse' 
+                : ''
+            }`}
             style={{ '--boot-delay': '0.1s' } as React.CSSProperties}
-            title="Rewind 10s"
+            title={showSetupMenu ? "Change Setting Option (Previous)" : "Rewind 10s"}
           >
             <Rewind className="w-2.5 h-2.5 flex-shrink-0" />
             <span>REW</span>
           </button>
           <button 
-            onClick={seekFwd} 
+            onClick={() => {
+              if (showSetupMenu) {
+                onSetupAction?.('NEXT');
+              } else {
+                seekFwd();
+              }
+            }} 
             disabled={!powered} 
-            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-1 relative font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-1 relative font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${
+              showSetupMenu 
+                ? '!border-[#ffea00] !text-[#ffea00] !bg-[#ffea00]/20 shadow-[0_0_12px_rgba(255,234,0,0.85)] ring-1 ring-[#ffea00] animate-pulse' 
+                : ''
+            }`}
             style={{ '--boot-delay': '0.2s' } as React.CSSProperties}
-            title="Fast Forward 10s"
+            title={showSetupMenu ? "Change Setting Option (Next)" : "Fast Forward 10s"}
           >
             <span>FF</span>
             <FastForward className="w-2.5 h-2.5 flex-shrink-0" />
@@ -94,21 +118,41 @@ export const LeftControls: React.FC<Props> = ({
 
         <div className="grid grid-cols-2 gap-1">
           <button 
-            onClick={tuneDown} 
+            onClick={() => {
+              if (showSetupMenu) {
+                onSetupAction?.('DOWN');
+              } else {
+                tuneDown();
+              }
+            }} 
             disabled={!powered} 
-            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-0.5 font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-0.5 font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${
+              showSetupMenu 
+                ? '!border-[#00e5ff] !text-[#00e5ff] !bg-[#00e5ff]/20 shadow-[0_0_12px_rgba(0,229,255,0.85)] ring-1 ring-[#00e5ff] animate-pulse' 
+                : ''
+            }`}
             style={{ '--boot-delay': '0.12s' } as React.CSSProperties}
-            title="Tune Down / Prev Track"
+            title={showSetupMenu ? "Scroll Down Settings Menu" : "Tune Down / Prev Track"}
           >
             <ChevronDown className="w-2.5 h-2.5 flex-shrink-0" />
             <span>TUNE -</span>
           </button>
           <button 
-            onClick={tuneUp} 
+            onClick={() => {
+              if (showSetupMenu) {
+                onSetupAction?.('UP');
+              } else {
+                tuneUp();
+              }
+            }} 
             disabled={!powered} 
-            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-0.5 font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''}`}
+            className={`btn-backlit h-5 text-[7px] flex items-center justify-center gap-0.5 font-bold tracking-wider ${powered ? 'lit' : ''} ${isBooting ? 'booting' : ''} ${
+              showSetupMenu 
+                ? '!border-[#00e5ff] !text-[#00e5ff] !bg-[#00e5ff]/20 shadow-[0_0_12px_rgba(0,229,255,0.85)] ring-1 ring-[#00e5ff] animate-pulse' 
+                : ''
+            }`}
             style={{ '--boot-delay': '0.22s' } as React.CSSProperties}
-            title="Tune Up / Next Track"
+            title={showSetupMenu ? "Scroll Up Settings Menu" : "Tune Up / Next Track"}
           >
             <span>TUNE +</span>
             <ChevronUp className="w-2.5 h-2.5 flex-shrink-0" />

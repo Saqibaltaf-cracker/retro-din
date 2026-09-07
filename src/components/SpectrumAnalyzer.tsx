@@ -12,10 +12,12 @@ interface Props {
   playing?: boolean;
   theme?: string;
   visualizerMode?: VisualizerMode;
-  fpsLimit?: 60 | 30 | 20;
+  fpsLimit?: number;
   canvasGlow?: boolean;
   lowEndMode?: boolean;
   simplifiedDisplayOnIdle?: boolean;
+  displayMode?: 'oled' | 'matrix';
+  screenBrightness?: number;
 }
 
 export const SpectrumAnalyzer: React.FC<Props> = ({ 
@@ -30,7 +32,9 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
   fpsLimit = 60,
   canvasGlow = true,
   lowEndMode = false,
-  simplifiedDisplayOnIdle = true
+  simplifiedDisplayOnIdle = true,
+  displayMode = 'oled',
+  screenBrightness = 1.0
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bootStartTimeRef = useRef<number>(0);
@@ -411,8 +415,8 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
         }
       }
 
-      const effectiveDimmer = dimmerLevel;
-      const isRgb = theme === 'rgb';
+      const effectiveDimmer = dimmerLevel * Math.max(0.15, screenBrightness);
+      const isRgb = false;
 
       // Audio spectral energy averages for reactive visualizers
       const bassAvg = ((dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / (4 * 255));
@@ -1174,7 +1178,11 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
 
         // Draw crisp drift video filling the display
         if (v && v.readyState >= 2) {
+          if (displayMode === 'matrix') {
+            ctx.filter = 'contrast(140%) brightness(110%)';
+          }
           ctx.drawImage(v, 0, 0, width, height);
+          ctx.filter = 'none';
         } else {
           // Responsive standby glow during initial buffering
           const pulse = (Math.sin(now * 0.003) * 0.5 + 0.5) * 0.15;
@@ -1201,7 +1209,11 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
 
         // Draw crisp serene Mount Fuji video filling the display
         if (sv && sv.readyState >= 2) {
+          if (displayMode === 'matrix') {
+            ctx.filter = 'contrast(135%) brightness(110%)';
+          }
           ctx.drawImage(sv, 0, 0, width, height);
+          ctx.filter = 'none';
         } else {
           // Responsive serene twilight standby glow during initial buffering
           const pulse = (Math.sin(now * 0.002) * 0.5 + 0.5) * 0.12;
@@ -1303,14 +1315,15 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
           }
         }
       }
+
     };
 
     draw();
     return () => cancelAnimationFrame(animationId);
-  }, [engine, powered, dimmerLevel, isBooting, isYtPlaying, playing, theme, visualizerMode, fpsLimit, canvasGlow, lowEndMode, simplifiedDisplayOnIdle]);
+  }, [engine, powered, dimmerLevel, isBooting, isYtPlaying, playing, theme, visualizerMode, fpsLimit, canvasGlow, lowEndMode, simplifiedDisplayOnIdle, displayMode, screenBrightness]);
 
   return (
-    <>
+    <div className="relative w-full h-full">
       <video
         ref={driftVideoRef}
         src="/jdm_drift_original.mp4"
@@ -1357,6 +1370,21 @@ export const SpectrumAnalyzer: React.FC<Props> = ({
         height={134} 
         className="w-full h-full block"
       />
-    </>
+
+      {/* Authentic Retro Dot Matrix CRT / VFD Aperture Shadow Mask Overlay */}
+      {displayMode === 'matrix' && powered && !isBooting && (
+        <div 
+          className="absolute inset-0 pointer-events-none z-10"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle 1.15px at 2px 2px, transparent 1.15px, rgba(2, 4, 8, 0.94) 1.35px),
+              radial-gradient(circle 0.8px at 2px 2px, rgba(255, 255, 255, 0.08) 0.8px, transparent 1px)
+            `,
+            backgroundSize: '4px 4px',
+            boxShadow: 'inset 0 0 16px rgba(0, 0, 0, 0.8)'
+          }}
+        />
+      )}
+    </div>
   );
 };

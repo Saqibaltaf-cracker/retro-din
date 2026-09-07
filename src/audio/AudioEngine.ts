@@ -143,13 +143,12 @@ export class AudioEngine {
   public playStream(url: string) {
     if (!url || this.isHardwareMuted) return;
     this.resume();
+    this.stopSynth();
     this.audioElement.src = url;
     this.audioElement.load();
     this.audioElement.play().catch(e => {
       if (e.name !== 'AbortError' && e.name !== 'NotAllowedError' && !this.isHardwareMuted) {
-        console.warn("AudioEngine playStream fallback to synth:", e);
-        // Fallback to retro synth on network/CORS error
-        this.startSynth();
+        console.warn("AudioEngine playStream notice:", e);
       }
     });
   }
@@ -160,11 +159,9 @@ export class AudioEngine {
     if (this.audioElement.src && !this.audioElement.src.endsWith('/')) {
       this.audioElement.play().catch(e => {
         if (e.name !== 'AbortError' && e.name !== 'NotAllowedError' && !this.isHardwareMuted) {
-          this.startSynth();
+          console.warn("Audio playback notice:", e);
         }
       });
-    } else {
-      this.startSynth();
     }
   }
 
